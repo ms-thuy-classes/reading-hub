@@ -17,7 +17,7 @@ const state = {
     doc: null,
     currentPage: 1,
     totalPages: 0,
-    scale: 2.5,
+    scale: 2.0,
     rendering: false,
     highlightMode: false,
     highlights: []
