@@ -1,0 +1,139 @@
+{
+  "id": "article-003",
+  "title": "The Future of Artificial Intelligence",
+  "level": "B2",
+  "pdf": "pdf/article-003.pdf",
+  "questions": [
+    {
+      "type": "mcq",
+      "question": "What does 'Artificial Intelligence' (AI) refer to?",
+      "choices": [
+        "Robots that look like humans",
+        "Computer systems that can perform tasks requiring human intelligence",
+        "A type of computer hardware",
+        "Software that only plays games"
+      ],
+      "answer": 1,
+      "explanation": "AI refers to computer systems designed to perform tasks that typically require human intelligence, such as learning, reasoning, and problem-solving."
+    },
+    {
+      "type": "mcq",
+      "question": "What is 'Machine Learning'?",
+      "choices": [
+        "Teaching robots to walk",
+        "A subset of AI where computers learn from data without being explicitly programmed",
+        "Building physical machines",
+        "A programming language"
+      ],
+      "answer": 1,
+      "explanation": "Machine Learning is a branch of AI where systems learn patterns from data and improve their performance over time without explicit programming."
+    },
+    {
+      "type": "fill",
+      "question": "The test proposed by Alan Turing to determine if a machine can exhibit intelligent behavior is called the _______ Test.",
+      "answer": ["Turing"],
+      "explanation": "The Turing Test, proposed by Alan Turing in 1950, evaluates a machine's ability to exhibit intelligent behavior indistinguishable from a human."
+    },
+    {
+      "type": "fill",
+      "question": "_______ intelligence refers to AI that can understand, learn, and apply knowledge across different domains like a human.",
+      "answer": ["General", "AGI", "Artificial General"],
+      "explanation": "Artificial General Intelligence (AGI) refers to AI with human-like cognitive abilities across various tasks."
+    },
+    {
+      "type": "checkbox",
+      "question": "Which of the following are CURRENT applications of AI? (Select all)",
+      "choices": [
+        "Voice assistants like Siri and Alexa",
+        "Medical diagnosis from medical images",
+        "Fully autonomous human-like robots in every home",
+        "Recommendation systems on Netflix and YouTube"
+      ],
+      "answer": [0, 1, 3],
+      "explanation": "AI is used in voice assistants, medical imaging, and recommendation systems. Fully autonomous human-like robots in every home are not yet a reality."
+    },
+    {
+      "type": "matching",
+      "question": "Match the AI concept with its definition:",
+      "pairs": [
+        { "left": "Neural Network", "right": "Computing system inspired by human brain" },
+        { "left": "Deep Learning", "right": "Neural networks with many layers" },
+        { "left": "NLP", "right": "AI that understands human language" },
+        { "left": "Computer Vision", "right": "AI that interprets visual information" }
+      ],
+      "explanation": "These are key concepts in modern AI technology."
+    },
+    {
+      "type": "mcq",
+      "question": "What is a major ethical concern about AI?",
+      "choices": [
+        "AI uses too much electricity",
+        "Bias in AI decisions and job displacement",
+        "AI cannot learn new things",
+        "AI is too slow"
+      ],
+      "answer": 1,
+      "explanation": "Major ethical concerns include algorithmic bias (AI making unfair decisions) and the potential for AI to replace human jobs."
+    },
+    {
+      "type": "mcq",
+      "question": "What is 'Generative AI'?",
+      "choices": [
+        "AI that only destroys data",
+        "AI that can create new content like text, images, and music",
+        "AI that only works with numbers",
+        "A type of computer virus"
+      ],
+      "answer": 1,
+      "explanation": "Generative AI (like ChatGPT, DALL-E) can create new content including text, images, music, and code."
+    },
+    {
+      "type": "heading",
+      "question": "Match each heading with the correct paragraph:",
+      "headings": [
+        "A. Healthcare Revolution",
+        "B. Transportation Transformation",
+        "C. Educational Impact",
+        "D. Creative Industries"
+      ],
+      "paragraphs": [
+        "AI is transforming medicine by analyzing medical images faster than human doctors, predicting diseases before symptoms appear, and helping discover new drugs in record time. Personalized treatment plans are now possible.",
+        "Self-driving cars use AI to navigate roads safely. Companies like Tesla and Waymo are leading this revolution. AI optimizes traffic flow, reduces accidents, and could make transportation accessible to everyone.",
+        "Intelligent tutoring systems adapt to each student's learning pace. AI can grade assignments, provide instant feedback, and create personalized learning paths. This could democratize quality education worldwide.",
+        "AI generates music, writes stories, creates artwork, and even designs fashion. While controversial, these tools are being embraced by artists as collaborators that enhance human creativity rather than replace it."
+      ],
+      "answer": [0, 1, 2, 3],
+      "explanation": "Each paragraph describes AI's impact on a different industry: healthcare, transportation, education, and creative fields."
+    },
+    {
+      "type": "mcq",
+      "question": "What is the 'singularity' in AI research?",
+      "choices": [
+        "A type of computer chip",
+        "The hypothetical point when AI surpasses human intelligence and becomes self-improving",
+        "A programming error",
+        "The first AI program ever created"
+      ],
+      "answer": 1,
+      "explanation": "The technological singularity is a hypothetical future point when AI surpasses human intelligence and can recursively improve itself."
+    },
+    {
+      "type": "checkbox",
+      "question": "Which statements about AI are TRUE?",
+      "choices": [
+        "AI can be biased if trained on biased data",
+        "Current AI is considered 'narrow AI' - good at specific tasks",
+        "AI will definitely destroy humanity within 10 years",
+        "AI systems require large amounts of data to learn effectively"
+      ],
+      "answer": [0, 1, 3],
+      "explanation": "AI can inherit biases from training data, current AI is 'narrow' (task-specific), and AI needs large datasets. The claim about destroying humanity is speculative and not a certainty."
+    },
+    {
+      "type": "fill",
+      "question": "The company OpenAI created a famous chatbot called _______.",
+      "answer": ["ChatGPT"],
+      "explanation": "ChatGPT, created by OpenAI, is a generative AI chatbot that can engage in human-like conversations."
+    }
+  ]
+}
