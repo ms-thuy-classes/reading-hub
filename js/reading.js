@@ -213,7 +213,6 @@ async function loadPDF(url) {
     `;
   }
 }
-
 async function renderPDFPage() {
   if (state.pdf.rendering) return;
   state.pdf.rendering = true;
@@ -232,12 +231,17 @@ async function renderPDFPage() {
     canvas.style.width = Math.floor(viewport.width) + 'px';
     canvas.style.height = Math.floor(viewport.height) + 'px';
 
-    // Highlight canvas
+    // Highlight canvas - QUAN TRỌNG: Reset kích thước
     const hCanvas = $('#pdf-highlight-canvas');
     hCanvas.width = canvas.width;
     hCanvas.height = canvas.height;
     hCanvas.style.width = canvas.style.width;
     hCanvas.style.height = canvas.style.height;
+    
+    // Reset vị trí canvas highlight
+    hCanvas.style.top = '20px';
+    hCanvas.style.left = '50%';
+    hCanvas.style.transform = 'translateX(-50%)';
 
     const transform = outputScale !== 1
       ? [outputScale, 0, 0, outputScale, 0, 0]
@@ -257,7 +261,7 @@ async function renderPDFPage() {
     const progress = (state.pdf.currentPage / state.pdf.totalPages) * 100;
     $('#pdf-progress-bar').style.width = progress + '%';
 
-    // Redraw highlights
+    // Redraw highlights - CHỈ vẽ của trang hiện tại
     redrawHighlights();
 
   } catch (err) {
@@ -266,7 +270,6 @@ async function renderPDFPage() {
     state.pdf.rendering = false;
   }
 }
-
 function initPDFControls() {
   $('#pdf-prev').addEventListener('click', () => {
     if (state.pdf.currentPage > 1) {
