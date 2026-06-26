@@ -1,0 +1,111 @@
+{
+  "id": "article-002",
+  "title": "Climate Change: A Global Challenge",
+  "level": "B1",
+  "pdf": "pdf/article-002.pdf",
+  "questions": [
+    {
+      "type": "mcq",
+      "question": "What is the main cause of climate change?",
+      "choices": [
+        "Volcanic eruptions",
+        "Greenhouse gas emissions from human activities",
+        "Changes in the sun's energy",
+        "Ocean currents"
+      ],
+      "answer": 1,
+      "explanation": "Human activities, especially burning fossil fuels, release greenhouse gases that trap heat in the atmosphere."
+    },
+    {
+      "type": "mcq",
+      "question": "Which gas is the most common greenhouse gas produced by humans?",
+      "choices": ["Oxygen", "Nitrogen", "Carbon dioxide (CO₂)", "Helium"],
+      "answer": 2,
+      "explanation": "Carbon dioxide (CO₂) is the primary greenhouse gas emitted through human activities."
+    },
+    {
+      "type": "fill",
+      "question": "The Earth's average temperature has risen by about 1°C since the _______ age.",
+      "answer": ["pre-industrial", "pre industrial"],
+      "explanation": "Since the pre-industrial era (around 1850), global temperatures have risen significantly."
+    },
+    {
+      "type": "fill",
+      "question": "The _______ layer protects Earth from harmful UV radiation but is being damaged.",
+      "answer": ["ozone"],
+      "explanation": "The ozone layer in the stratosphere protects life on Earth from ultraviolet radiation."
+    },
+    {
+      "type": "checkbox",
+      "question": "Which of these are EFFECTS of climate change? (Select all)",
+      "choices": [
+        "Rising sea levels",
+        "More frequent extreme weather",
+        "Melting glaciers",
+        "Decrease in global temperatures"
+      ],
+      "answer": [0, 1, 2],
+      "explanation": "Climate change causes rising sea levels, extreme weather, and melting glaciers - NOT a decrease in temperatures."
+    },
+    {
+      "type": "matching",
+      "question": "Match the renewable energy source with its description:",
+      "pairs": [
+        { "left": "Solar Energy", "right": "Energy from the sun" },
+        { "left": "Wind Energy", "right": "Energy from wind turbines" },
+        { "left": "Hydro Energy", "right": "Energy from flowing water" },
+        { "left": "Geothermal", "right": "Energy from Earth's heat" }
+      ],
+      "explanation": "Renewable energy sources are sustainable alternatives to fossil fuels."
+    },
+    {
+      "type": "mcq",
+      "question": "What is the Paris Agreement?",
+      "choices": [
+        "A trade deal between European countries",
+        "An international treaty to limit global warming",
+        "A law to protect endangered animals",
+        "A plan to build solar panels"
+      ],
+      "answer": 1,
+      "explanation": "The Paris Agreement (2015) is an international treaty aiming to limit global warming to well below 2°C."
+    },
+    {
+      "type": "mcq",
+      "question": "Which sector produces the MOST greenhouse gases globally?",
+      "choices": ["Agriculture", "Transportation", "Energy production", "Waste management"],
+      "answer": 2,
+      "explanation": "Energy production (electricity and heat) is the largest source of global greenhouse gas emissions."
+    },
+    {
+      "type": "checkbox",
+      "question": "What can INDIVIDUALS do to help fight climate change?",
+      "choices": [
+        "Use public transport or cycle",
+        "Reduce meat consumption",
+        "Leave lights on all day",
+        "Recycle and reduce waste"
+      ],
+      "answer": [0, 1, 3],
+      "explanation": "Individual actions like using public transport, eating less meat, and recycling can significantly reduce your carbon footprint."
+    },
+    {
+      "type": "heading",
+      "question": "Match each heading with the correct paragraph:",
+      "headings": [
+        "A. The Science Behind It",
+        "B. Effects on Wildlife",
+        "C. Solutions for the Future",
+        "D. What You Can Do"
+      ],
+      "paragraphs": [
+        "Scientists have confirmed that human activities are warming the planet. The burning of coal, oil, and gas releases carbon dioxide, which traps heat in the atmosphere like a blanket.",
+        "Many animals are losing their habitats. Polar bears struggle as sea ice melts, while coral reefs die from warmer ocean temperatures. Some species may face extinction.",
+        "Governments and companies are investing in renewable energy like solar and wind power. Electric cars are becoming more popular, and new technologies can capture carbon from the air.",
+        "Simple changes in daily life can make a difference. Walk or cycle instead of driving, eat more plant-based meals, reduce energy use at home, and support eco-friendly companies."
+      ],
+      "answer": [0, 1, 2, 3],
+      "explanation": "Each paragraph discusses a different aspect of climate change: science, wildlife impact, solutions, and individual actions."
+    }
+  ]
+}
