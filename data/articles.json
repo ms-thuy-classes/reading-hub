@@ -9,7 +9,7 @@
     "questions": 8,
     "tags": ["Nature", "Animals", "Science"],
     "pdf": "pdf/article-001.pdf",
-    "json": "articles/article-001.json"
+    "json": "data/articles/article-001.json"
   },
   {
     "id": "article-002",
@@ -21,7 +21,7 @@
     "questions": 10,
     "tags": ["Environment", "Science", "Global"],
     "pdf": "pdf/article-002.pdf",
-    "json": "articles/article-002.json"
+    "json": "data/articles/article-002.json"
   },
   {
     "id": "article-003",
@@ -33,6 +33,6 @@
     "questions": 12,
     "tags": ["Technology", "AI", "Future"],
     "pdf": "pdf/article-003.pdf",
-    "json": "articles/article-003.json"
+    "json": "data/articles/article-003.json"
   }
 ]
