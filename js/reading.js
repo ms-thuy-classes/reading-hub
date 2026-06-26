@@ -1436,6 +1436,20 @@ function restoreAnswers() {
         }
         break;
 
+      case 'matching':
+        // Restore matching state
+        if (typeof answer === 'object') {
+          Object.entries(answer).forEach(([leftPair, rightPair]) => {
+            const leftItem = card.querySelector(`.matching-item[data-side="left"][data-pair="${leftPair}"]`);
+            const rightItem = card.querySelector(`.matching-item[data-side="right"][data-pair="${rightPair}"]`);
+            
+            if (leftItem && rightItem) {
+              createMatch(leftItem, rightItem, index, leftPair, rightPair);
+            }
+          });
+        }
+        break;
+
       case 'heading':
         if (typeof answer === 'object') {
           Object.entries(answer).forEach(([para, val]) => {
