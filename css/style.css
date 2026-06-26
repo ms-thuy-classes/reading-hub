@@ -1627,3 +1627,32 @@ body.dark-mode .theme-icon-dark { display: inline; }
 body.dark-mode .highlight-color-toolbar {
   background: rgba(30, 30, 50, 0.9);
 }
+/* Matching - Individual pair grading */
+.matching-item.matched {
+  background: rgba(72, 187, 120, 0.2) !important;
+  border-color: #48bb78 !important;
+  color: #22543d;
+}
+
+.matching-item.wrong-match {
+  background: rgba(252, 92, 125, 0.2) !important;
+  border-color: #fc5c7d !important;
+  color: #742a2a;
+}
+
+body.dark-mode .matching-item.matched {
+  background: rgba(72, 187, 120, 0.3) !important;
+  color: #9ae6b4;
+}
+
+body.dark-mode .matching-item.wrong-match {
+  background: rgba(252, 92, 125, 0.3) !important;
+  color: #feb2b2;
+}
+
+/* Bỏ viền đỏ/xanh của cả card khi là matching */
+.question-card.matching-card.correct,
+.question-card.matching-card.incorrect {
+  border-color: var(--border-light);
+  background: var(--bg-card);
+}
