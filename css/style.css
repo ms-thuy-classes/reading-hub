@@ -1559,10 +1559,44 @@ body.dark-mode .theme-icon-dark { display: inline; }
   background: rgba(100, 100, 150, 0.5);
 }
 
-/* Highlight toolbar */
-#pdf-highlight-eraser.active,
-#pdf-highlight-clear.active {
-  background: #fc5c7d !important;
-  color: white !important;
+/* Highlight Color Toolbar */
+.highlight-color-toolbar {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  margin-left: 8px;
 }
 
+.color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.color-btn:hover {
+  transform: scale(1.2);
+  border-color: rgba(0, 0, 0, 0.5);
+}
+
+.color-btn.active {
+  border-color: #000;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #667eea;
+  transform: scale(1.1);
+}
+
+/* Highlight canvas cursor */
+#pdf-highlight-canvas.active {
+  cursor: crosshair;
+}
+
+/* Dark mode cho toolbar */
+body.dark-mode .highlight-color-toolbar {
+  background: rgba(30, 30, 50, 0.9);
+}
