@@ -1,0 +1,75 @@
+{
+  "id": "article-001",
+  "title": "The Amazing World of Bees",
+  "level": "A2",
+  "pdf": "pdf/article-001.pdf",
+  "questions": [
+    {
+      "type": "mcq",
+      "question": "What do bees mainly collect from flowers?",
+      "choices": ["Water", "Nectar and pollen", "Leaves", "Seeds"],
+      "answer": 1,
+      "explanation": "Bees collect nectar (to make honey) and pollen (for protein) from flowers."
+    },
+    {
+      "type": "mcq",
+      "question": "How do bees communicate with each other?",
+      "choices": ["By singing", "By dancing", "By shouting", "By writing"],
+      "answer": 1,
+      "explanation": "Bees perform a special 'waggle dance' to tell other bees where to find food."
+    },
+    {
+      "type": "mcq",
+      "question": "How many wings does a bee have?",
+      "choices": ["2", "4", "6", "8"],
+      "answer": 1,
+      "explanation": "A bee has 4 wings - two large ones and two smaller ones."
+    },
+    {
+      "type": "fill",
+      "question": "Bees make a sweet food called _______.",
+      "answer": ["honey"],
+      "explanation": "Bees make honey from the nectar they collect from flowers."
+    },
+    {
+      "type": "fill",
+      "question": "The queen bee's main job is to lay _______.",
+      "answer": ["eggs"],
+      "explanation": "The queen bee is the mother of all bees in the hive and her main job is to lay eggs."
+    },
+    {
+      "type": "checkbox",
+      "question": "Which of the following are TRUE about bees? (Choose all that apply)",
+      "choices": [
+        "Bees are important for pollinating plants",
+        "Bees can sting multiple times without dying",
+        "A hive can have multiple queen bees",
+        "Bees live in groups called colonies"
+      ],
+      "answer": [0, 3],
+      "explanation": "Bees are vital pollinators and live in colonies. Honeybees die after stinging, and a hive typically has only one queen."
+    },
+    {
+      "type": "matching",
+      "question": "Match the bee type with its role:",
+      "pairs": [
+        { "left": "Queen Bee", "right": "Lays eggs" },
+        { "left": "Worker Bee", "right": "Collects food" },
+        { "left": "Drone Bee", "right": "Mates with queen" }
+      ],
+      "explanation": "Each type of bee has a specific role in the hive."
+    },
+    {
+      "type": "mcq",
+      "question": "Why are bees important for humans?",
+      "choices": [
+        "They make beautiful sounds",
+        "They help grow fruits and vegetables through pollination",
+        "They protect gardens from insects",
+        "They produce wax only"
+      ],
+      "answer": 1,
+      "explanation": "Bees pollinate about 1/3 of the food we eat, making them essential for agriculture."
+    }
+  ]
+}
