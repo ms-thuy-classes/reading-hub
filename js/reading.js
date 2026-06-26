@@ -1014,9 +1014,31 @@ function updateTimer() {
 }
 
 function updateProgress() {
-  const total = state.article.questions.length;
-  const answered = Object.keys(state.userAnswers).length;
-  const percent = Math.round((answered / total) * 100);
+  let answeredItems = 0;
+  let totalItems = 0;
+
+  state.article.questions.forEach((q, i) => {
+    const ans = state.userAnswers[i];
+    
+    if (q.type === 'matching') {
+      totalItems += q.pairs.length;
+      if (typeof ans === 'object' && ans !== null) {
+        answeredItems += Object.keys(ans).length;
+      }
+    } else if (q.type === 'heading') {
+      totalItems += q.paragraphs.length;
+      if (typeof ans === 'object' && ans !== null) {
+        answeredItems += Object.keys(ans).filter(k => ans[k] !== -1 && ans[k] !== undefined).length;
+      }
+    } else {
+      totalItems += 1;
+      if (ans !== undefined && ans !== null && ans !== '') {
+        answeredItems += 1;
+      }
+    }
+  });
+
+  const percent = totalItems > 0 ? Math.round((answeredItems / totalItems) * 100) : 0;
 
   $('#progress-bar').style.width = percent + '%';
   $('#progress-text').textContent = percent + '%';
@@ -1062,55 +1084,79 @@ function checkAnswers() {
 
   state.checked = true;
   let correct = 0;
-  const total = state.article.questions.length;
+  let total = 0; // Đếm tổng số items (câu nhỏ)
 
   state.article.questions.forEach((q, i) => {
     const card = $(`.question-card[data-index="${i}"]`);
     const userAnswer = state.userAnswers[i];
-    let isCorrect = false;
+    let isQuestionCorrect = false;
 
     switch (q.type) {
       case 'mcq':
-        isCorrect = userAnswer === q.answer;
+        total += 1;
+        isQuestionCorrect = (userAnswer === q.answer);
+        if (isQuestionCorrect) correct++;
         highlightMCQ(card, q.answer, userAnswer);
         break;
 
       case 'checkbox':
-        const userArr = Array.isArray(userAnswer) ? userAnswer.sort() : [];
+        total += 1;
+        const userArr = Array.isArray(userAnswer) ? userArr : [];
         const correctArr = [...q.answer].sort();
-        isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr);
+        const userArrSorted = [...userAnswer].sort();
+        isQuestionCorrect = JSON.stringify(userArrSorted) === JSON.stringify(correctArr);
+        if (isQuestionCorrect) correct++;
         highlightCheckbox(card, q.answer, userAnswer || []);
         break;
 
       case 'fill':
+        total += 1;
         const userText = (userAnswer || '').toLowerCase().trim();
         const correctAnswers = q.answer.map(a => a.toLowerCase().trim());
-        isCorrect = correctAnswers.includes(userText);
-        highlightFill(card, isCorrect, q.answer[0]);
+        isQuestionCorrect = correctAnswers.includes(userText);
+        if (isQuestionCorrect) correct++;
+        highlightFill(card, isQuestionCorrect, q.answer[0]);
         break;
 
       case 'matching':
-        isCorrect = checkMatching(q, userAnswer || {});
-        highlightMatching(card, q, userAnswer || {});
+        // CHẤM ĐIỂM TỪNG CẶP
+        const userMatches = userAnswer || {};
+        q.pairs.forEach((pair, leftIdx) => {
+          total += 1; // Mỗi cặp là 1 item
+          const rightIdx = userMatches[leftIdx] !== undefined ? parseInt(userMatches[leftIdx]) : -1;
+          if (rightIdx === leftIdx) {
+            correct++; // Đúng cặp này
+          }
+        });
+        highlightMatching(card, q, userMatches);
+        // Không tô màu cả card vì có thể đúng sai lẫn lộn
         break;
 
       case 'heading':
-        isCorrect = checkHeading(q, userAnswer || {});
-        highlightHeading(card, q, userAnswer || {});
+        total += q.paragraphs.length;
+        const userHeadings = userAnswer || {};
+        q.paragraphs.forEach((_, paraIdx) => {
+          if (parseInt(userHeadings[paraIdx]) === paraIdx) {
+            correct++;
+          }
+        });
+        highlightHeading(card, q, userHeadings);
         break;
     }
 
-    if (isCorrect) {
-      correct++;
-      card.classList.add('correct');
-    } else {
-      card.classList.add('incorrect');
+    // Chỉ tô màu card nếu không phải matching (vì matching tô màu từng cặp)
+    if (q.type !== 'matching') {
+      if (isQuestionCorrect) {
+        card.classList.add('correct');
+      } else {
+        card.classList.add('incorrect');
+      }
     }
 
     // Show explanation
     const explanation = card.querySelector('.explanation');
     if (q.explanation) {
-      explanation.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect.'}</strong> ${escapeHtml(q.explanation)}`;
+      explanation.innerHTML = `<strong>${isQuestionCorrect || q.type === 'matching' ? '✓ Đã chấm!' : ' Có đáp án sai.'}</strong> ${escapeHtml(q.explanation)}`;
       explanation.style.display = 'block';
     }
   });
@@ -1118,20 +1164,16 @@ function checkAnswers() {
   // Update score
   state.score.correct = correct;
   state.score.total = total;
-  state.score.points = ((correct / total) * 10).toFixed(1);
+  state.score.points = total > 0 ? ((correct / total) * 10).toFixed(1) : 0;
 
   $('#score-correct').textContent = `${correct} / ${total}`;
   $('#score-points').textContent = `${state.score.points} / 10`;
 
-  // Save to history
   saveToHistory();
-
-  // Show result modal
   showResultModal();
 
   showToast(`Bạn đạt ${state.score.points}/10 điểm!`, correct === total ? 'success' : 'info');
 }
-
 function highlightMCQ(card, correctIdx, userIdx) {
   card.querySelectorAll('.choice-item').forEach(item => {
     const choice = parseInt(item.dataset.choice);
@@ -1175,22 +1217,28 @@ function checkMatching(q, userAnswers) {
 }
 
 function highlightMatching(card, q, userAnswers) {
-  card.querySelectorAll('.matching-item[data-side="right"]').forEach(zone => {
-    const rightPair = parseInt(zone.dataset.pair);
-    // Check if any left item was matched to this right item
-    let matchedLeft = null;
-    for (const [leftPair, rPair] of Object.entries(userAnswers)) {
-      if (parseInt(rPair) === rightPair) {
-        matchedLeft = parseInt(leftPair);
-        break;
-      }
+  // Reset trạng thái matched cũ
+  card.querySelectorAll('.matching-item').forEach(item => {
+    item.classList.remove('matched', 'wrong-match');
+    item.style.opacity = '1';
+  });
+
+  q.pairs.forEach((pair, leftIdx) => {
+    const leftItem = card.querySelector(`.matching-item[data-side="left"][data-pair="${leftIdx}"]`);
+    const rightIdx = userAnswers[leftIdx] !== undefined ? parseInt(userAnswers[leftIdx]) : -1;
+    const isCorrect = (rightIdx === leftIdx);
+
+    // Tô màu item bên trái
+    if (leftItem) {
+      leftItem.classList.add(isCorrect ? 'matched' : 'wrong-match');
+      leftItem.style.opacity = '1'; // Luôn hiển thị rõ
     }
 
-    if (matchedLeft !== null) {
-      if (matchedLeft === rightPair) {
-        zone.classList.add('matched');
-      } else {
-        zone.classList.add('wrong-match');
+    // Tô màu item bên phải đã được nối
+    if (rightIdx !== -1 && !isNaN(rightIdx)) {
+      const rightItem = card.querySelector(`.matching-item[data-side="right"][data-pair="${rightIdx}"]`);
+      if (rightItem) {
+        rightItem.classList.add(isCorrect ? 'matched' : 'wrong-match');
       }
     }
   });
