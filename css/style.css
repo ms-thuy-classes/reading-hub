@@ -1230,9 +1230,36 @@ body.dark-mode .theme-icon-dark { display: inline; }
   border-color: #667eea;
   border-style: dashed;
 }
+/* Matching - Matched state */
 .matching-item.matched {
   background: rgba(72, 187, 120, 0.15);
   border-color: #48bb78;
+  border-style: solid;
+}
+
+.matching-item[data-matched="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.matching-item[data-side="right"][data-matched="true"] {
+  cursor: pointer;
+  background: rgba(72, 187, 120, 0.15);
+  border-color: #48bb78;
+  transition: all 0.2s;
+}
+
+.matching-item[data-side="right"][data-matched="true"]:hover {
+  background: rgba(252, 92, 125, 0.2);
+  border-color: #fc5c7d;
+  transform: scale(1.02);
+}
+
+/* Tooltip hint */
+.matching-item[data-side="right"][data-matched="true"]::after {
+  content: ' (click để hủy)';
+  font-size: 0.75rem;
+  opacity: 0.6;
 }
 .matching-item.wrong-match {
   background: rgba(252, 92, 125, 0.15);
