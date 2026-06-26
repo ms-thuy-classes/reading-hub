@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reading - Learn with Ms. Thúy</title>
+  <meta name="description" content="Bài đọc tương tác với PDF và câu hỏi" />
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+  <link rel="manifest" href="manifest.json" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled />
+</head>
+<body class="reading-page">
+
+  <!-- ========== TOP BAR ========== -->
+  <header class="reading-header glass" id="reading-header">
+    <div class="reading-header-inner">
+      <a href="index.html" class="btn btn-ghost btn-sm" id="btn-back">
+        ← Back
+      </a>
+
+      <div class="reading-title-bar">
+        <span class="article-title" id="article-title">Loading...</span>
+        <span class="level-badge" id="article-level"></span>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn-icon" id="btn-bookmark" aria-label="Bookmark" title="Bookmark">🔖</button>
+        <button class="btn-icon" id="btn-favorite" aria-label="Favorite" title="Favorite">🤍</button>
+        <button class="btn-icon" id="btn-share" aria-label="Share" title="Share">🔗</button>
+        <button class="btn-icon" id="theme-toggle" aria-label="Toggle dark mode">
+          <span class="theme-icon-light">🌙</span>
+          <span class="theme-icon-dark">☀️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== STICKY SCOREBOARD ========== -->
+  <div class="scoreboard glass" id="scoreboard">
+    <div class="score-item">
+      <label>Học sinh</label>
+      <input type="text" id="student-name" placeholder="Tên của bạn..." />
+    </div>
+    <div class="score-item">
+      <label>Đúng</label>
+      <span class="score-value" id="score-correct">0 / 0</span>
+    </div>
+    <div class="score-item">
+      <label>Điểm</label>
+      <span class="score-value" id="score-points">0.0 / 10</span>
+    </div>
+    <div class="score-item">
+      <label>Thời gian</label>
+      <span class="score-value" id="score-time">00:00</span>
+    </div>
+    <div class="score-item progress-item">
+      <label>Tiến độ</label>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <span class="progress-text" id="progress-text">0%</span>
+    </div>
+  </div>
+
+  <!-- ========== MOBILE TABS ========== -->
+  <div class="mobile-tabs" id="mobile-tabs">
+    <button class="mobile-tab active" data-tab="pdf">📄 PDF</button>
+    <button class="mobile-tab" data-tab="questions">❓ Questions</button>
+  </div>
+
+  <!-- ========== MAIN SPLIT ========== -->
+  <main class="split-container" id="split-container">
+
+    <!-- LEFT: PDF -->
+    <div class="split-left" id="split-left">
+      <div class="pdf-toolbar glass" id="pdf-toolbar">
+        <button class="btn-icon" id="pdf-prev" title="Previous page">◀</button>
+        <span class="pdf-page-info">
+          <input type="number" id="pdf-page-input" min="1" value="1" />
+          <span>/ <span id="pdf-page-count">0</span></span>
+        </span>
+        <button class="btn-icon" id="pdf-next" title="Next page">▶</button>
+
+        <div class="toolbar-divider"></div>
+
+        <button class="btn-icon" id="pdf-zoom-out" title="Zoom out">➖</button>
+        <span class="zoom-level" id="zoom-level">100%</span>
+        <button class="btn-icon" id="pdf-zoom-in" title="Zoom in">➕</button>
+
+        <div class="toolbar-divider"></div>
+
+        <button class="btn btn-sm btn-ghost" id="pdf-fit-width">Fit Width</button>
+        <button class="btn btn-sm btn-ghost" id="pdf-fit-page">Fit Page</button>
+        <button class="btn-icon" id="pdf-fullscreen" title="Fullscreen">⛶</button>
+
+        <div class="toolbar-divider"></div>
+
+        <button class="btn-icon" id="pdf-highlight-toggle" title="Highlight tool">🖍️</button>
+        <button class="btn-icon" id="pdf-search-toggle" title="Search in PDF">🔍</button>
+      </div>
+
+      <div class="pdf-search-bar" id="pdf-search-bar" style="display:none;">
+        <input type="text" id="pdf-search-input" placeholder="Tìm trong PDF..." />
+        <button class="btn btn-sm" id="pdf-search-prev">▲</button>
+        <button class="btn btn-sm" id="pdf-search-next">▼</button>
+        <button class="btn-icon" id="pdf-search-close">✕</button>
+      </div>
+
+      <div class="pdf-progress" id="pdf-progress">
+        <div class="pdf-progress-bar" id="pdf-progress-bar"></div>
+      </div>
+
+      <div class="pdf-canvas-wrapper" id="pdf-canvas-wrapper">
+        <canvas id="pdf-canvas"></canvas>
+        <canvas id="pdf-highlight-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- RESIZER -->
+    <div class="split-resizer" id="split-resizer" role="separator" aria-label="Resize panels"></div>
+
+    <!-- RIGHT: QUESTIONS -->
+    <div class="split-right" id="split-right">
+      <div class="questions-header glass">
+        <h2>📝 Câu hỏi</h2>
+        <div class="questions-actions">
+          <button class="btn btn-primary" id="btn-check">✓ Check Answers</button>
+          <button class="btn btn-ghost" id="btn-retry">↻ Retry</button>
+          <button class="btn btn-ghost" id="btn-print">🖨️ In</button>
+          <button class="btn btn-ghost" id="btn-export">📥 Export PDF</button>
+        </div>
+      </div>
+
+      <div class="questions-list" id="questions-list">
+        <!-- Skeleton -->
+        <div class="skeleton-question"></div>
+        <div class="skeleton-question"></div>
+        <div class="skeleton-question"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========== MODALS ========== -->
+  <!-- Retry Confirm Modal -->
+  <div class="modal-overlay" id="modal-retry" style="display:none;">
+    <div class="modal glass" role="dialog" aria-modal="true" aria-labelledby="modal-retry-title">
+      <h3 id="modal-retry-title">🔄 Làm lại bài?</h3>
+      <p>Tất cả câu trả lời, điểm số và tiến độ sẽ bị xóa. Bạn có chắc chắn?</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modal-retry-cancel">Hủy</button>
+        <button class="btn btn-danger" id="modal-retry-confirm">Làm lại</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Modal -->
+  <div class="modal-overlay" id="modal-result" style="display:none;">
+    <div class="modal glass modal-lg" role="dialog" aria-modal="true">
+      <h3>🎉 Kết quả</h3>
+      <div id="result-content"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modal-result-close">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TOAST ========== -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- ========== BACK TO TOP ========== -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">↑</button>
+
+  <script src="js/reading.js"></script>
+</body>
+</html>
