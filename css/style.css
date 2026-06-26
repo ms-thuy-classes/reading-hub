@@ -1558,55 +1558,11 @@ body.dark-mode .theme-icon-dark { display: inline; }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 100, 150, 0.5);
 }
-.highlight-delete-hover{
 
-outline:2px solid #ff5f6d;
-
-cursor:pointer;
-
-}
-.highlight-palette{
-
-display:flex;
-
-gap:6px;
-
-align-items:center;
-
-margin:0 8px;
-
+/* Highlight toolbar */
+#pdf-highlight-eraser.active,
+#pdf-highlight-clear.active {
+  background: #fc5c7d !important;
+  color: white !important;
 }
 
-.color-btn{
-
-width:34px;
-
-height:34px;
-
-border:none;
-
-border-radius:8px;
-
-background:white;
-
-cursor:pointer;
-
-font-size:18px;
-
-transition:.2s;
-
-}
-
-.color-btn:hover{
-
-transform:scale(1.15);
-
-}
-
-.color-btn.active{
-
-outline:2px solid #667eea;
-
-box-shadow:0 0 8px rgba(102,126,234,.4);
-
-}
