@@ -362,20 +362,103 @@ function initPDFControls() {
 // ---------- HIGHLIGHT ----------
 function initHighlight() {
   const toggle = $('#pdf-highlight-toggle');
-  const hCanvas = $('#pdf-highlight-canvas');
+const eraserBtn=document.createElement("button");
 
+eraserBtn.id="pdf-highlight-eraser";
+
+eraserBtn.className="btn-icon";
+
+eraserBtn.innerHTML="🩹";
+
+eraserBtn.title="Erase Highlight";
+  eraserBtn.className = 'btn-icon';
+  eraserBtn.id = 'pdf-highlight-eraser';
+  eraserBtn.title = 'Eraser (click highlight to remove)';
+  eraserBtn.textContent = '';
+  eraserBtn.style.display = 'none';
+
+  // Insert after highlight toggle
+  toggle.parentNode.insertBefore(eraserBtn, toggle.nextSibling);
+
+  let eraserMode = false;
+
+  // Toggle highlight mode
   toggle.addEventListener('click', () => {
     state.pdf.highlightMode = !state.pdf.highlightMode;
-    hCanvas.classList.toggle('active', state.pdf.highlightMode);
+    eraserMode = false;
+    eraserBtn.style.display = state.pdf.highlightMode ? 'none' : 'inline-flex';
+    $('#pdf-highlight-canvas').classList.toggle('active', state.pdf.highlightMode);
     toggle.style.background = state.pdf.highlightMode ? '#667eea' : '';
     toggle.style.color = state.pdf.highlightMode ? 'white' : '';
+    eraserBtn.style.background = '';
+    eraserBtn.style.color = '';
+  });
+
+  // Toggle eraser mode
+  eraserBtn.addEventListener('click', () => {
+    eraserMode = !eraserMode;
+    state.pdf.highlightMode = false;
+    toggle.style.background = '';
+    toggle.style.color = '';
+    $('#pdf-highlight-canvas').classList.toggle('active', eraserMode);
+    eraserBtn.style.background = eraserMode ? '#fc5c7d' : '';
+    eraserBtn.style.color = eraserMode ? 'white' : '';
   });
 
   let isDrawing = false;
   let startX, startY;
 
+  const hCanvas = $('#pdf-highlight-canvas');
+
+  // Click to erase (when in eraser mode)
+  hCanvas.addEventListener('click', (e) => {
+    if (!eraserMode) return;
+
+    const rect = hCanvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    // Find clicked highlight
+    const pageHighlights = state.pdf.highlights.filter(h => h.page === state.pdf.currentPage);
+   const clicked=state.pdf.highlights.find(h=>{
+
+return h.page===state.pdf.currentPage &&
+
+clickX>=h.x &&
+
+clickX<=h.x+h.width &&
+
+clickY>=h.y &&
+
+clickY<=h.y+h.height;
+
+});
+
+if(!clicked) return;
+
+state.pdf.highlights=
+
+state.pdf.highlights.filter(h=>h.id!==clicked.id);
+
+saveHighlights();
+
+redrawHighlights();
+
+showToast("Highlight removed","success");
+
+    if (clickedIndex >= 0) {
+      // Remove this highlight
+      const globalIndex = state.pdf.highlights.indexOf(pageHighlights[clickedIndex]);
+      state.pdf.highlights.splice(globalIndex, 1);
+      saveHighlights();
+      redrawHighlights();
+      showToast('Đã xóa highlight!', 'success');
+    }
+  });
+
+  // Draw highlight
   hCanvas.addEventListener('mousedown', (e) => {
-    if (!state.pdf.highlightMode) return;
+    if (!state.pdf.highlightMode || eraserMode) return;
     isDrawing = true;
     const rect = hCanvas.getBoundingClientRect();
     startX = e.clientX - rect.left;
@@ -383,66 +466,88 @@ function initHighlight() {
   });
 
   hCanvas.addEventListener('mousemove', (e) => {
-    if (!isDrawing) return;
+    if (!isDrawing || !state.pdf.highlightMode) return;
     const rect = hCanvas.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
     const currentY = e.clientY - rect.top;
 
     const ctx = hCanvas.getContext('2d');
-    ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
-    ctx.fillRect(
-      Math.min(startX, currentX),
-      Math.min(startY, currentY),
-      Math.abs(currentX - startX),
-      Math.abs(currentY - startY)
-    );
+ctx.globalCompositeOperation="multiply";
+
+ctx.fillStyle=h.color==="yellow"
+
+?"rgba(255,235,59,.10)"
+
+:h.color==="green"
+
+?"rgba(76,175,80,.10)"
+
+:"rgba(244,143,177,.10)";
+     ctx.globalCompositeOperation = "source-over";
   });
 
   hCanvas.addEventListener('mouseup', (e) => {
-    if (!isDrawing) return;
+    if (!isDrawing || !state.pdf.highlightMode) return;
     isDrawing = false;
 
     const rect = hCanvas.getBoundingClientRect();
     const endX = e.clientX - rect.left;
     const endY = e.clientY - rect.top;
 
-    const highlight = {
-      page: state.pdf.currentPage,
-      x: Math.min(startX, endX),
-      y: Math.min(startY, endY),
-      width: Math.abs(endX - startX),
-      height: Math.abs(endY - startY)
-    };
+    // Only save if size is reasonable (avoid accidental clicks)
+    const width = Math.abs(endX - startX);
+    const height = Math.abs(endY - startY);
 
-    state.pdf.highlights.push(highlight);
-    saveHighlights();
+    if (width > 10 && height > 10) {
+     const highlight={
+
+id:crypto.randomUUID(),
+
+page:state.pdf.currentPage,
+
+x:Math.min(startX,endX),
+
+y:Math.min(startY,endY),
+
+width:width,
+
+height:height,
+
+color:"yellow"
+
+}
+
+      state.pdf.highlights.push(highlight);
+      saveHighlights();
+    } else {
+      // Too small, redraw without it
+      redrawHighlights();
+    }
   });
-}
 
-function redrawHighlights() {
-  const hCanvas = $('#pdf-highlight-canvas');
-  const ctx = hCanvas.getContext('2d');
-  ctx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+  // Add clear all button
+  const clearAllBtn = document.createElement('button');
+  clearAllBtn.className = 'btn btn-sm btn-ghost';
+  clearAllBtn.textContent = '🗑️ Clear All';
+  clearAllBtn.title = 'Xóa tất cả highlight';
+  clearAllBtn.addEventListener('click', () => {
+    if (state.pdf.highlights.length === 0) {
+      showToast('Không có highlight nào!', 'info');
+      return;
+    }
 
-  const pageHighlights = state.pdf.highlights.filter(h => h.page === state.pdf.currentPage);
-  ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
-
-  pageHighlights.forEach(h => {
-    ctx.fillRect(h.x, h.y, h.width, h.height);
+    if (confirm('Xóa TẤT CẢ highlight trên mọi trang?')) {
+      state.pdf.highlights = [];
+      saveHighlights();
+      redrawHighlights();
+      showToast('Đã xóa tất cả highlight!', 'success');
+    }
   });
+
+  // Insert after eraser
+  eraserBtn.parentNode.insertBefore(clearAllBtn, eraserBtn.nextSibling);
 }
 
-function saveHighlights() {
-  localStorage.setItem(`highlights-${state.articleId}`, JSON.stringify(state.pdf.highlights));
-}
-
-function loadHighlights() {
-  try {
-    state.pdf.highlights = JSON.parse(localStorage.getItem(`highlights-${state.articleId}`) || '[]');
-  } catch {
-    state.pdf.highlights = [];
-  }
-}
 
 // ---------- QUESTIONS ----------
 function renderQuestions() {
