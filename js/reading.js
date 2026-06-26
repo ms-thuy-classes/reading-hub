@@ -832,12 +832,21 @@ function initQuestionInteractions() {
 function initDragAndDrop() {
   let draggedItem = null;
 
+  // Xử lý drag start cho items bên trái
   $$('.matching-item[data-side="left"]').forEach(item => {
     item.addEventListener('dragstart', (e) => {
       if (state.checked) { e.preventDefault(); return; }
+      
+      // Nếu item đã được match rồi thì không cho drag
+      if (item.dataset.matched === 'true') {
+        e.preventDefault();
+        return;
+      }
+      
       draggedItem = item;
       item.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', item.dataset.pair);
     });
 
     item.addEventListener('dragend', () => {
@@ -846,6 +855,7 @@ function initDragAndDrop() {
     });
   });
 
+  // Xử lý drop zones (items bên phải)
   $$('.matching-item[data-side="right"]').forEach(zone => {
     zone.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -867,22 +877,120 @@ function initDragAndDrop() {
       const leftPair = draggedItem.dataset.pair;
       const rightPair = zone.dataset.pair;
 
-      // Save the match
-      if (!state.userAnswers[index]) state.userAnswers[index] = {};
-      state.userAnswers[index][leftPair] = rightPair;
+      // Nếu zone này đã được match rồi thì không cho match thêm
+      if (zone.dataset.matched === 'true') {
+        showToast('Đáp án này đã được chọn!', 'warning');
+        return;
+      }
 
-      // Visual feedback
-      zone.textContent = draggedItem.textContent + ' → ' + zone.textContent;
-      zone.classList.add('matched');
-      draggedItem.style.opacity = '0.5';
-      draggedItem.draggable = false;
+      // Tạo match
+      createMatch(draggedItem, zone, index, leftPair, rightPair);
+    });
 
-      saveUserAnswers();
-      updateProgress();
+    // Click để unmatch (hủy match)
+    zone.addEventListener('click', () => {
+      if (state.checked) return;
+      
+      if (zone.dataset.matched === 'true') {
+        const leftPair = zone.dataset.matchedWith;
+        const leftItem = $(`.matching-item[data-side="left"][data-pair="${leftPair}"]`);
+        
+        if (leftItem) {
+          removeMatch(leftItem, zone);
+        }
+      }
+    });
+  });
+
+  // Click vào item bên trái đã match để unmatch
+  $$('.matching-item[data-side="left"]').forEach(item => {
+    item.addEventListener('click', () => {
+      if (state.checked) return;
+      
+      if (item.dataset.matched === 'true') {
+        const rightPair = item.dataset.matchedWith;
+        const rightItem = $(`.matching-item[data-side="right"][data-pair="${rightPair}"]`);
+        
+        if (rightItem) {
+          removeMatch(item, rightItem);
+        }
+      }
     });
   });
 }
 
+// Tạo match giữa 2 items
+function createMatch(leftItem, rightItem, index, leftPair, rightPair) {
+  // Lưu match vào state
+  if (!state.userAnswers[index]) {
+    state.userAnswers[index] = {};
+  }
+  state.userAnswers[index][leftPair] = rightPair;
+
+  // Đánh dấu là đã match
+  leftItem.dataset.matched = 'true';
+  leftItem.dataset.matchedWith = rightPair;
+  rightItem.dataset.matched = 'true';
+  rightItem.dataset.matchedWith = leftPair;
+
+  // Update UI - left item trở nên mờ đi
+  leftItem.style.opacity = '0.4';
+  leftItem.style.cursor = 'not-allowed';
+  leftItem.draggable = false;
+  leftItem.classList.add('matched');
+
+  // Update UI - right item hiển thị cả 2 text
+  const originalText = rightItem.textContent;
+  const leftText = leftItem.textContent;
+  rightItem.innerHTML = `<span style="opacity:0.7">${leftText}</span> → ${originalText}`;
+  rightItem.classList.add('matched');
+  rightItem.style.background = 'rgba(72, 187, 120, 0.15)';
+  rightItem.style.borderColor = '#48bb78';
+  rightItem.style.cursor = 'pointer';
+
+  // Lưu đáp án
+  saveUserAnswers();
+  updateProgress();
+
+  showToast('Đã nối!', 'success');
+}
+
+// Hủy match
+function removeMatch(leftItem, rightItem) {
+  const index = leftItem.dataset.index;
+  const leftPair = leftItem.dataset.pair;
+
+  // Xóa khỏi state
+  if (state.userAnswers[index] && state.userAnswers[index][leftPair]) {
+    delete state.userAnswers[index][leftPair];
+  }
+
+  // Reset flags
+  delete leftItem.dataset.matched;
+  delete leftItem.dataset.matchedWith;
+  delete rightItem.dataset.matched;
+  delete rightItem.dataset.matchedWith;
+
+  // Reset UI - left item trở lại bình thường
+  leftItem.style.opacity = '1';
+  leftItem.style.cursor = 'grab';
+  leftItem.draggable = true;
+  leftItem.classList.remove('matched');
+
+  // Reset UI - right item trở lại text gốc
+  const originalText = rightItem.textContent.split(' → ').pop();
+  rightItem.textContent = originalText;
+  rightItem.classList.remove('matched');
+  rightItem.style.background = '';
+  rightItem.style.borderColor = '';
+  rightItem.style.cursor = 'grab';
+
+  // Lưu đáp án
+  saveUserAnswers();
+  updateProgress();
+
+  showToast('Đã hủy nối!', 'info');
+}
 // ---------- SCOREBOARD ----------
 function initScoreboard() {
   const nameInput = $('#student-name');
