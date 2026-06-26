@@ -362,23 +362,25 @@ function initPDFControls() {
 // ---------- HIGHLIGHT ----------
 function initHighlight() {
   const toggle = $('#pdf-highlight-toggle');
-const eraserBtn=document.createElement("button");
+  const hCanvas = $('#pdf-highlight-canvas');
 
-eraserBtn.id="pdf-highlight-eraser";
-
-eraserBtn.className="btn-icon";
-
-eraserBtn.innerHTML="🩹";
-
-eraserBtn.title="Erase Highlight";
+  // Tạo nút Eraser
+  const eraserBtn = document.createElement('button');
   eraserBtn.className = 'btn-icon';
   eraserBtn.id = 'pdf-highlight-eraser';
-  eraserBtn.title = 'Eraser (click highlight to remove)';
-  eraserBtn.textContent = '';
+  eraserBtn.title = 'Tẩy highlight (click vào vùng tô)';
+  eraserBtn.textContent = '🧹';
   eraserBtn.style.display = 'none';
-
-  // Insert after highlight toggle
   toggle.parentNode.insertBefore(eraserBtn, toggle.nextSibling);
+
+  // Tạo nút Clear All
+  const clearAllBtn = document.createElement('button');
+  clearAllBtn.className = 'btn-icon';
+  clearAllBtn.id = 'pdf-highlight-clear';
+  clearAllBtn.title = 'Xóa tất cả highlight';
+  clearAllBtn.textContent = '🗑️';
+  clearAllBtn.style.display = 'none';
+  eraserBtn.parentNode.insertBefore(clearAllBtn, eraserBtn.nextSibling);
 
   let eraserMode = false;
 
@@ -386,12 +388,15 @@ eraserBtn.title="Erase Highlight";
   toggle.addEventListener('click', () => {
     state.pdf.highlightMode = !state.pdf.highlightMode;
     eraserMode = false;
-    eraserBtn.style.display = state.pdf.highlightMode ? 'none' : 'inline-flex';
-    $('#pdf-highlight-canvas').classList.toggle('active', state.pdf.highlightMode);
+    hCanvas.classList.toggle('active', state.pdf.highlightMode);
     toggle.style.background = state.pdf.highlightMode ? '#667eea' : '';
     toggle.style.color = state.pdf.highlightMode ? 'white' : '';
+    eraserBtn.style.display = state.pdf.highlightMode ? 'none' : 'inline-flex';
+    clearAllBtn.style.display = state.pdf.highlightMode ? 'none' : 'inline-flex';
     eraserBtn.style.background = '';
     eraserBtn.style.color = '';
+    clearAllBtn.style.background = '';
+    clearAllBtn.style.color = '';
   });
 
   // Toggle eraser mode
@@ -400,90 +405,77 @@ eraserBtn.title="Erase Highlight";
     state.pdf.highlightMode = false;
     toggle.style.background = '';
     toggle.style.color = '';
-    $('#pdf-highlight-canvas').classList.toggle('active', eraserMode);
+    hCanvas.classList.toggle('active', eraserMode);
     eraserBtn.style.background = eraserMode ? '#fc5c7d' : '';
     eraserBtn.style.color = eraserMode ? 'white' : '';
+    clearAllBtn.style.background = '';
+    clearAllBtn.style.color = '';
   });
 
-  let isDrawing = false;
-  let startX, startY;
-
-  const hCanvas = $('#pdf-highlight-canvas');
-
-  // Click to erase (when in eraser mode)
+  // Click để xóa highlight (khi đang ở eraser mode)
   hCanvas.addEventListener('click', (e) => {
     if (!eraserMode) return;
 
     const rect = hCanvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    const scaleX = hCanvas.width / rect.width;
+    const scaleY = hCanvas.height / rect.height;
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
 
-    // Find clicked highlight
-    const pageHighlights = state.pdf.highlights.filter(h => h.page === state.pdf.currentPage);
-   const clicked=state.pdf.highlights.find(h=>{
+    // Tìm highlight bị click (theo thứ tự ngược để ưu tiên cái trên cùng)
+    const pageHighlights = state.pdf.highlights
+      .map((h, i) => ({ h, i }))
+      .filter(x => x.h.page === state.pdf.currentPage);
 
-return h.page===state.pdf.currentPage &&
+    let foundIndex = -1;
+    for (let j = pageHighlights.length - 1; j >= 0; j--) {
+      const item = pageHighlights[j];
+      if (clickX >= item.h.x && clickX <= item.h.x + item.h.width &&
+          clickY >= item.h.y && clickY <= item.h.y + item.h.height) {
+        foundIndex = item.i;
+        break;
+      }
+    }
 
-clickX>=h.x &&
-
-clickX<=h.x+h.width &&
-
-clickY>=h.y &&
-
-clickY<=h.y+h.height;
-
-});
-
-if(!clicked) return;
-
-state.pdf.highlights=
-
-state.pdf.highlights.filter(h=>h.id!==clicked.id);
-
-saveHighlights();
-
-redrawHighlights();
-
-showToast("Highlight removed","success");
-
-    if (clickedIndex >= 0) {
-      // Remove this highlight
-      const globalIndex = state.pdf.highlights.indexOf(pageHighlights[clickedIndex]);
-      state.pdf.highlights.splice(globalIndex, 1);
+    if (foundIndex >= 0) {
+      state.pdf.highlights.splice(foundIndex, 1);
       saveHighlights();
       redrawHighlights();
       showToast('Đã xóa highlight!', 'success');
     }
   });
 
-  // Draw highlight
+  // Vẽ highlight
+  let isDrawing = false;
+  let startX, startY;
+
   hCanvas.addEventListener('mousedown', (e) => {
     if (!state.pdf.highlightMode || eraserMode) return;
     isDrawing = true;
     const rect = hCanvas.getBoundingClientRect();
-    startX = e.clientX - rect.left;
-    startY = e.clientY - rect.top;
+    const scaleX = hCanvas.width / rect.width;
+    const scaleY = hCanvas.height / rect.height;
+    startX = (e.clientX - rect.left) * scaleX;
+    startY = (e.clientY - rect.top) * scaleY;
   });
 
   hCanvas.addEventListener('mousemove', (e) => {
     if (!isDrawing || !state.pdf.highlightMode) return;
     const rect = hCanvas.getBoundingClientRect();
-    const currentX = e.clientX - rect.left;
-    const currentY = e.clientY - rect.top;
+    const scaleX = hCanvas.width / rect.width;
+    const scaleY = hCanvas.height / rect.height;
+    const currentX = (e.clientX - rect.left) * scaleX;
+    const currentY = (e.clientY - rect.top) * scaleY;
 
+    // Preview: vẽ tạm lên canvas
     const ctx = hCanvas.getContext('2d');
-ctx.globalCompositeOperation="multiply";
-
-ctx.fillStyle=h.color==="yellow"
-
-?"rgba(255,235,59,.10)"
-
-:h.color==="green"
-
-?"rgba(76,175,80,.10)"
-
-:"rgba(244,143,177,.10)";
-     ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = 'rgba(255, 255, 100, 0.25)';
+    ctx.fillRect(
+      Math.min(startX, currentX),
+      Math.min(startY, currentY),
+      Math.abs(currentX - startX),
+      Math.abs(currentY - startY)
+    );
   });
 
   hCanvas.addEventListener('mouseup', (e) => {
@@ -491,51 +483,38 @@ ctx.fillStyle=h.color==="yellow"
     isDrawing = false;
 
     const rect = hCanvas.getBoundingClientRect();
-    const endX = e.clientX - rect.left;
-    const endY = e.clientY - rect.top;
+    const scaleX = hCanvas.width / rect.width;
+    const scaleY = hCanvas.height / rect.height;
+    const endX = (e.clientX - rect.left) * scaleX;
+    const endY = (e.clientY - rect.top) * scaleY;
 
-    // Only save if size is reasonable (avoid accidental clicks)
     const width = Math.abs(endX - startX);
     const height = Math.abs(endY - startY);
 
-    if (width > 10 && height > 10) {
-     const highlight={
-
-id:crypto.randomUUID(),
-
-page:state.pdf.currentPage,
-
-x:Math.min(startX,endX),
-
-y:Math.min(startY,endY),
-
-width:width,
-
-height:height,
-
-color:"yellow"
-
-}
+    // Chỉ lưu nếu đủ lớn (tránh click nhầm)
+    if (width > 15 && height > 15) {
+      const highlight = {
+        page: state.pdf.currentPage,
+        x: Math.min(startX, endX),
+        y: Math.min(startY, endY),
+        width: width,
+        height: height
+      };
 
       state.pdf.highlights.push(highlight);
       saveHighlights();
-    } else {
-      // Too small, redraw without it
-      redrawHighlights();
     }
+
+    // Vẽ lại để chuẩn hóa
+    redrawHighlights();
   });
 
-  // Add clear all button
-  const clearAllBtn = document.createElement('button');
-  clearAllBtn.className = 'btn btn-sm btn-ghost';
-  clearAllBtn.textContent = '🗑️ Clear All';
-  clearAllBtn.title = 'Xóa tất cả highlight';
+  // Clear All
   clearAllBtn.addEventListener('click', () => {
     if (state.pdf.highlights.length === 0) {
       showToast('Không có highlight nào!', 'info');
       return;
     }
-
     if (confirm('Xóa TẤT CẢ highlight trên mọi trang?')) {
       state.pdf.highlights = [];
       saveHighlights();
@@ -543,11 +522,44 @@ color:"yellow"
       showToast('Đã xóa tất cả highlight!', 'success');
     }
   });
-
-  // Insert after eraser
-  eraserBtn.parentNode.insertBefore(clearAllBtn, eraserBtn.nextSibling);
 }
 
+// Vẽ lại tất cả highlight của trang hiện tại
+function redrawHighlights() {
+  const hCanvas = $('#pdf-highlight-canvas');
+  if (!hCanvas) return;
+
+  const ctx = hCanvas.getContext('2d');
+  ctx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+
+  const pageHighlights = state.pdf.highlights.filter(h => h.page === state.pdf.currentPage);
+
+  // Màu nhạt hơn để thấy chữ
+  pageHighlights.forEach(h => {
+    // Lớp nền nhạt
+    ctx.fillStyle = 'rgba(255, 255, 100, 0.25)';
+    ctx.fillRect(h.x, h.y, h.width, h.height);
+
+    // Viền mỏng
+    ctx.strokeStyle = 'rgba(255, 200, 0, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(h.x, h.y, h.width, h.height);
+  });
+}
+
+// Lưu highlight vào localStorage
+function saveHighlights() {
+  localStorage.setItem(`highlights-${state.articleId}`, JSON.stringify(state.pdf.highlights));
+}
+
+// Load highlight từ localStorage
+function loadHighlights() {
+  try {
+    state.pdf.highlights = JSON.parse(localStorage.getItem(`highlights-${state.articleId}`) || '[]');
+  } catch {
+    state.pdf.highlights = [];
+  }
+}
 
 // ---------- QUESTIONS ----------
 function renderQuestions() {
