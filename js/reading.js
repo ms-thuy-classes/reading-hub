@@ -651,6 +651,7 @@ function renderQuestions() {
 
 function createQuestionHTML(q, index) {
   const num = index + 1;
+  const isMatching = q.type === 'matching' ? ' matching-card' : '';
   let content = '';
 
   switch (q.type) {
@@ -674,7 +675,7 @@ function createQuestionHTML(q, index) {
   }
 
   return `
-    <div class="question-card" data-index="${index}" data-type="${q.type}">
+    <div class="question-card${isMatching}" data-index="${index}" data-type="${q.type}">
       <span class="question-number">Question ${num}</span>
       <div class="question-text">${escapeHtml(q.question)}</div>
       ${content}
