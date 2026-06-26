@@ -222,6 +222,11 @@ async function renderPDFPage() {
     const viewport = page.getViewport({ scale: state.pdf.scale });
 
     const canvas = $('#pdf-canvas');
+    if (!canvas) {
+      console.error('PDF canvas not found');
+      return;
+    }
+
     const context = canvas.getContext('2d');
 
     // High DPI rendering
@@ -231,17 +236,17 @@ async function renderPDFPage() {
     canvas.style.width = Math.floor(viewport.width) + 'px';
     canvas.style.height = Math.floor(viewport.height) + 'px';
 
-    // Highlight canvas - QUAN TRỌNG: Reset kích thước
+    // Highlight canvas
     const hCanvas = $('#pdf-highlight-canvas');
-    hCanvas.width = canvas.width;
-    hCanvas.height = canvas.height;
-    hCanvas.style.width = canvas.style.width;
-    hCanvas.style.height = canvas.style.height;
-    
-    // Reset vị trí canvas highlight
-    hCanvas.style.top = '20px';
-    hCanvas.style.left = '50%';
-    hCanvas.style.transform = 'translateX(-50%)';
+    if (hCanvas) {
+      hCanvas.width = canvas.width;
+      hCanvas.height = canvas.height;
+      hCanvas.style.width = canvas.style.width;
+      hCanvas.style.height = canvas.style.height;
+      hCanvas.style.top = '20px';
+      hCanvas.style.left = '50%';
+      hCanvas.style.transform = 'translateX(-50%)';
+    }
 
     const transform = outputScale !== 1
       ? [outputScale, 0, 0, outputScale, 0, 0]
@@ -257,11 +262,10 @@ async function renderPDFPage() {
     $('#pdf-page-input').value = state.pdf.currentPage;
     $('#zoom-level').textContent = Math.round(state.pdf.scale * 100) + '%';
 
-    // Progress
     const progress = (state.pdf.currentPage / state.pdf.totalPages) * 100;
     $('#pdf-progress-bar').style.width = progress + '%';
 
-    // Redraw highlights - CHỈ vẽ của trang hiện tại
+    // Redraw highlights
     redrawHighlights();
 
   } catch (err) {
@@ -565,6 +569,7 @@ function initHighlight() {
       redrawHighlights();
     }
   });
+   
 
   // Clear All cho trang hiện tại
   clearAllBtn.addEventListener('click', () => {
@@ -582,8 +587,7 @@ function initHighlight() {
     }
   });
   
-  // Load highlights khi khởi tạo
-  loadHighlights();
+  
 }
 // Vẽ lại tất cả highlight của trang hiện tại
 function redrawHighlights() {
@@ -609,6 +613,19 @@ function redrawHighlights() {
     ctx.lineWidth = 1;
     ctx.strokeRect(h.x, h.y, h.width, h.height);
   });
+}
+// Lưu highlight vào localStorage
+function saveHighlights() {
+  localStorage.setItem(`highlights-${state.articleId}`, JSON.stringify(state.pdf.highlights));
+}
+
+// Load highlight từ localStorage
+function loadHighlights() {
+  try {
+    state.pdf.highlights = JSON.parse(localStorage.getItem(`highlights-${state.articleId}`) || '[]');
+  } catch {
+    state.pdf.highlights = [];
+  }
 }
 // ---------- QUESTIONS ----------
 function renderQuestions() {
