@@ -1,0 +1,247 @@
+/* ============================================
+   DARK MODE STYLES
+   Đảm bảo độ tương phản WCAG AA
+   ============================================ */
+
+body.dark-mode {
+  --text-primary: #f0f0f5;
+  --text-secondary: #c0c0d0;
+  --text-muted: #9090a8;
+  --text-inverse: #1a1a2e;
+
+  --bg-primary: #0f0f1e;
+  --bg-secondary: #1a1a2e;
+  --bg-card: rgba(30, 30, 50, 0.8);
+  --bg-glass: rgba(20, 20, 40, 0.6);
+  --bg-glass-strong: rgba(30, 30, 50, 0.85);
+
+  --border-light: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.12);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 30px rgba(102, 126, 234, 0.4);
+}
+
+body.dark-mode {
+  background: #0f0f1e;
+  background-image:
+    radial-gradient(at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%);
+  color: var(--text-primary);
+}
+
+body.dark-mode .glass {
+  background: var(--bg-glass-strong);
+  border-color: var(--border-light);
+}
+
+body.dark-mode .hero-bg {
+  opacity: 0.3;
+}
+
+body.dark-mode .shape {
+  opacity: 0.3;
+}
+
+body.dark-mode .logo-text {
+  color: var(--text-primary);
+}
+
+body.dark-mode .nav-link {
+  color: var(--text-secondary);
+}
+body.dark-mode .nav-link:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+body.dark-mode .nav-link.active {
+  background: rgba(102, 126, 234, 0.2);
+  color: #a0b4ff;
+}
+
+body.dark-mode .btn-icon {
+  background: rgba(255,255,255,0.08);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+body.dark-mode .btn-icon:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+body.dark-mode .btn-ghost {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+body.dark-mode .btn-ghost:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+body.dark-mode .search-box input {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+body.dark-mode .search-box input:focus {
+  background: rgba(255,255,255,0.1);
+  border-color: #667eea;
+}
+body.dark-mode .search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+body.dark-mode .filter-btn {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  border-color: var(--border-medium);
+}
+body.dark-mode .filter-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+}
+
+body.dark-mode .article-card {
+  background: var(--bg-card);
+  border-color: var(--border-light);
+}
+body.dark-mode .article-card:hover {
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+body.dark-mode .card-title { color: var(--text-primary); }
+body.dark-mode .card-description { color: var(--text-secondary); }
+body.dark-mode .card-meta { color: var(--text-muted); }
+
+body.dark-mode .card-tag {
+  background: rgba(102, 126, 234, 0.2);
+  color: #a0b4ff;
+}
+
+body.dark-mode .page-btn {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  border-color: var(--border-medium);
+}
+body.dark-mode .page-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+}
+
+body.dark-mode .toast {
+  background: #1a1a2e;
+  color: var(--text-primary);
+  border-color: #667eea;
+}
+
+body.dark-mode .modal {
+  background: var(--bg-glass-strong);
+}
+
+body.dark-mode .score-item input {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+body.dark-mode .score-value { color: var(--text-primary); }
+
+body.dark-mode .split-left {
+  background: #1a1a2e;
+}
+body.dark-mode .split-right {
+  background: var(--bg-secondary);
+}
+
+body.dark-mode .pdf-canvas-wrapper {
+  background: #2a2a3e;
+}
+
+body.dark-mode #pdf-canvas {
+  background: white;
+}
+
+body.dark-mode .pdf-page-info input,
+body.dark-mode .pdf-search-bar input,
+body.dark-mode .heading-select {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+body.dark-mode .question-card {
+  background: var(--bg-card);
+  border-color: var(--border-light);
+}
+
+body.dark-mode .choice-item {
+  background: rgba(255,255,255,0.03);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+body.dark-mode .choice-item:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: #667eea;
+}
+body.dark-mode .choice-item.selected {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+}
+
+body.dark-mode .fill-input {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+body.dark-mode .matching-item {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+body.dark-mode .matching-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+body.dark-mode .heading-match-item {
+  background: rgba(255,255,255,0.03);
+  border-color: var(--border-medium);
+}
+body.dark-mode .paragraph-text {
+  background: rgba(255,255,255,0.03);
+  color: var(--text-secondary);
+}
+
+body.dark-mode .explanation {
+  background: rgba(102, 126, 234, 0.15);
+  color: var(--text-secondary);
+}
+body.dark-mode .explanation strong { color: var(--text-primary); }
+
+body.dark-mode .result-stat {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--border-light);
+}
+
+body.dark-mode .result-history th { color: var(--text-muted); }
+body.dark-mode .result-history td { color: var(--text-secondary); }
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .skeleton-card::before,
+body.dark-mode .skeleton-card::after,
+body.dark-mode .skeleton-question {
+  background: linear-gradient(90deg, #2a2a3e 25%, #3a3a4e 50%, #2a2a3e 75%);
+  background-size: 200% 100%;
+}
+
+body.dark-mode .footer {
+  color: var(--text-muted);
+  border-top-color: var(--border-medium);
+}
