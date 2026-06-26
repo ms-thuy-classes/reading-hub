@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn with Ms. Thúy - Practice Reading Smarter Every Day</title>
+  <meta name="description" content="Website luyện đọc tiếng Anh chuyên nghiệp với PDF, câu hỏi tương tác và chấm điểm tự động." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Learn with Ms. Thúy" />
+  <meta property="og:description" content="Practice Reading Smarter Every Day" />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dark.css" id="dark-css" disabled />
+</head>
+<body>
+
+  <!-- ========== HEADER ========== -->
+  <header class="header glass" id="header">
+    <div class="header-inner container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">Learn with <strong>Ms. Thúy</strong></span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="#reading" class="nav-link">Reading</a>
+        <a href="#" class="nav-link">IELTS</a>
+        <a href="#" class="nav-link">TOEIC</a>
+        <a href="#" class="nav-link">HSK</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn-icon" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle Dark Mode">
+          <span class="theme-icon-light">🌙</span>
+          <span class="theme-icon-dark">☀️</span>
+        </button>
+        <button class="btn-icon hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content container">
+      <h1 class="hero-title animate-fade-up">
+        Practice Reading <span class="gradient-text">Smarter</span> Every Day.
+      </h1>
+      <p class="hero-subtitle animate-fade-up delay-1">
+        Luyện đọc hiểu với PDF chất lượng cao, câu hỏi tương tác và chấm điểm tự động.
+      </p>
+      <a href="#articles" class="btn btn-primary btn-lg animate-fade-up delay-2">
+        Bắt đầu luyện tập →
+      </a>
+    </div>
+    <div class="hero-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </section>
+
+  <!-- ========== CONTINUE READING ========== -->
+  <section class="section continue-section" id="continue-section" style="display:none;">
+    <div class="container">
+      <h2 class="section-title">📖 Tiếp tục đọc</h2>
+      <div id="continue-reading-list" class="card-grid"></div>
+    </div>
+  </section>
+
+  <!-- ========== ARTICLES ========== -->
+  <section class="section" id="articles">
+    <div class="container">
+
+      <!-- Search & Filter -->
+      <div class="toolbar glass">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Tìm theo tên bài, từ khóa, cấp độ..." aria-label="Search articles" />
+        </div>
+
+        <div class="filter-group" role="group" aria-label="Filter by level">
+          <button class="filter-btn active" data-level="all">All</button>
+          <button class="filter-btn" data-level="A1">A1</button>
+          <button class="filter-btn" data-level="A2">A2</button>
+          <button class="filter-btn" data-level="B1">B1</button>
+          <button class="filter-btn" data-level="B2">B2</button>
+          <button class="filter-btn" data-level="C1">C1</button>
+          <button class="filter-btn" data-level="C2">C2</button>
+        </div>
+      </div>
+
+      <!-- Skeleton Loading -->
+      <div id="skeleton-grid" class="card-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+
+      <!-- Article Cards -->
+      <div id="card-grid" class="card-grid" style="display:none;"></div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" style="display:none;">
+        <div class="empty-icon">📭</div>
+        <h3>Không tìm thấy bài viết nào</h3>
+        <p>Thử thay đổi từ khóa hoặc bộ lọc khác nhé!</p>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 <strong>Learn with Ms. Thúy</strong> — Practice Reading Smarter Every Day.</p>
+    </div>
+  </footer>
+
+  <!-- ========== TOAST CONTAINER ========== -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- ========== BACK TO TOP ========== -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">↑</button>
+
+  <!-- JS -->
+  <script src="js/app.js"></script>
+</body>
+</html>
