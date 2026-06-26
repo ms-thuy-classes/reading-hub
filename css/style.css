@@ -1558,3 +1558,10 @@ body.dark-mode .theme-icon-dark { display: inline; }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 100, 150, 0.5);
 }
+.highlight-delete-hover{
+
+outline:2px solid #ff5f6d;
+
+cursor:pointer;
+
+}
