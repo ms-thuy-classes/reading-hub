@@ -582,7 +582,31 @@ function initHighlight() {
   // Load highlights khi khởi tạo
   loadHighlights();
 }
+// Vẽ lại tất cả highlight của trang hiện tại
+function redrawHighlights() {
+  const hCanvas = $('#pdf-highlight-canvas');
+  if (!hCanvas) return;
 
+  const ctx = hCanvas.getContext('2d');
+  ctx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+
+  // CHỈ vẽ highlight của trang hiện tại
+  const pageHighlights = state.pdf.highlights.filter(h => h.page === state.pdf.currentPage);
+
+  const highlightOpacity = 0.35;
+
+  pageHighlights.forEach(h => {
+    // Lớp nền với màu đã chọn
+    const color = h.color || '#FFFF00'; // Mặc định là vàng
+    ctx.fillStyle = hexToRgba(color, highlightOpacity);
+    ctx.fillRect(h.x, h.y, h.width, h.height);
+
+    // Viền mỏng
+    ctx.strokeStyle = hexToRgba(color, 0.6);
+    ctx.lineWidth = 1;
+    ctx.strokeRect(h.x, h.y, h.width, h.height);
+  });
+}
 // ---------- QUESTIONS ----------
 function renderQuestions() {
   const list = $('#questions-list');
@@ -1440,4 +1464,11 @@ function shuffleArray(arr) {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+// Chuyển hex color sang rgba
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
