@@ -2,7 +2,7 @@
 
 **Practice Reading Smarter Every Day**
 
-Website luyện đọc tiếng Anh chuyên nghiệp với PDF, câu hỏi tương tác và chấm điểm tự động. 
+Website luyện đọc tiếng Anh chuyên nghiệp với PDF, câu hỏi tương tác và chấm điểm tự động.  
 
 ## ✨ Tính năng
   
