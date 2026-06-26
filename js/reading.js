@@ -17,7 +17,7 @@ const state = {
     doc: null,
     currentPage: 1,
     totalPages: 0,
-    scale: 1.5,
+    scale: 2.5,
     rendering: false,
     highlightMode: false,
     highlights: []
@@ -219,44 +219,47 @@ async function renderPDFPage() {
 
   try {
     const page = await state.pdf.doc.getPage(state.pdf.currentPage);
+    
+    // Lấy độ phân giải màn hình (Retina = 2, 4K = 3 hoặc 4)
+    const outputScale = window.devicePixelRatio || 1;
     const viewport = page.getViewport({ scale: state.pdf.scale });
 
     const canvas = $('#pdf-canvas');
-    if (!canvas) {
-      console.error('PDF canvas not found');
-      return;
-    }
+    if (!canvas) return;
 
-    const context = canvas.getContext('2d');
+    // Thêm { alpha: false } giúp render nhanh hơn và nét hơn cho PDF (vì PDF không trong suốt)
+    const context = canvas.getContext('2d', { alpha: false });
 
-    // High DPI rendering
-    const outputScale = window.devicePixelRatio || 1;
+    // 1. Set kích thước THẬT của canvas (gấp 2-3 lần kích thước hiển thị)
     canvas.width = Math.floor(viewport.width * outputScale);
     canvas.height = Math.floor(viewport.height * outputScale);
+    
+    // 2. Set kích thước HIỂN THỊ trên CSS
     canvas.style.width = Math.floor(viewport.width) + 'px';
     canvas.style.height = Math.floor(viewport.height) + 'px';
 
-    // Highlight canvas
+    // 3. Scale context để vẽ đúng kích thước viewport
+    context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
+
+    // 4. Render PDF
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
+
+    // --- CẬP NHẬT CANVAS HIGHLIGHT ---
     const hCanvas = $('#pdf-highlight-canvas');
     if (hCanvas) {
       hCanvas.width = canvas.width;
       hCanvas.height = canvas.height;
       hCanvas.style.width = canvas.style.width;
       hCanvas.style.height = canvas.style.height;
-      hCanvas.style.top = '20px';
-      hCanvas.style.left = '50%';
-      hCanvas.style.transform = 'translateX(-50%)';
+      
+      // Căn chỉnh highlight canvas khớp tuyệt đối với pdf canvas
+      hCanvas.style.top = canvas.offsetTop + 'px';
+      hCanvas.style.left = canvas.offsetLeft + 'px';
+      hCanvas.style.transform = 'none'; // Bỏ translateX vì đã dùng offsetLeft
     }
-
-    const transform = outputScale !== 1
-      ? [outputScale, 0, 0, outputScale, 0, 0]
-      : null;
-
-    await page.render({
-      canvasContext: context,
-      transform: transform,
-      viewport: viewport
-    }).promise;
 
     // Update UI
     $('#pdf-page-input').value = state.pdf.currentPage;
@@ -265,7 +268,7 @@ async function renderPDFPage() {
     const progress = (state.pdf.currentPage / state.pdf.totalPages) * 100;
     $('#pdf-progress-bar').style.width = progress + '%';
 
-    // Redraw highlights
+    // Vẽ lại highlights
     redrawHighlights();
 
   } catch (err) {
@@ -506,8 +509,8 @@ function initHighlight() {
     const rect = hCanvas.getBoundingClientRect();
     const scaleX = hCanvas.width / rect.width;
     const scaleY = hCanvas.height / rect.height;
-    startX = (e.clientX - rect.left) * scaleX;
-    startY = (e.clientY - rect.top) * scaleY;
+      startX = ((e.clientX - rect.left) * outputScale); // Nhân với outputScale
+  startY = ((e.clientY - rect.top) * outputScale);
     hCanvas.style.cursor = 'crosshair';
   });
 
@@ -589,7 +592,7 @@ function initHighlight() {
   
   
 }
-// Vẽ lại tất cả highlight của trang hiện tại
+
 function redrawHighlights() {
   const hCanvas = $('#pdf-highlight-canvas');
   if (!hCanvas) return;
@@ -597,21 +600,20 @@ function redrawHighlights() {
   const ctx = hCanvas.getContext('2d');
   ctx.clearRect(0, 0, hCanvas.width, hCanvas.height);
 
-  // CHỈ vẽ highlight của trang hiện tại
+  const outputScale = window.devicePixelRatio || 1;
   const pageHighlights = state.pdf.highlights.filter(h => h.page === state.pdf.currentPage);
-
   const highlightOpacity = 0.35;
 
   pageHighlights.forEach(h => {
-    // Lớp nền với màu đã chọn
-    const color = h.color || '#FFFF00'; // Mặc định là vàng
+    const color = h.color || '#FFFF00';
+    
+    // Scale tọa độ theo devicePixelRatio
     ctx.fillStyle = hexToRgba(color, highlightOpacity);
-    ctx.fillRect(h.x, h.y, h.width, h.height);
+    ctx.fillRect(h.x * outputScale, h.y * outputScale, h.width * outputScale, h.height * outputScale);
 
-    // Viền mỏng
     ctx.strokeStyle = hexToRgba(color, 0.6);
-    ctx.lineWidth = 1;
-    ctx.strokeRect(h.x, h.y, h.width, h.height);
+    ctx.lineWidth = 1 * outputScale;
+    ctx.strokeRect(h.x * outputScale, h.y * outputScale, h.width * outputScale, h.height * outputScale);
   });
 }
 // Lưu highlight vào localStorage
