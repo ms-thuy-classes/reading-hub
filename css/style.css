@@ -1656,3 +1656,15 @@ body.dark-mode .matching-item.wrong-match {
   border-color: var(--border-light);
   background: var(--bg-card);
 }
+/* Tối ưu độ nét cho Canvas PDF */
+#pdf-canvas, #pdf-highlight-canvas {
+  image-rendering: -webkit-optimize-contrast; /* Chrome, Safari */
+  image-rendering: crisp-edges;               /* Firefox */
+  image-rendering: pixelated;                 /* Fallback */
+  -ms-interpolation-mode: nearest-neighbor;   /* IE */
+}
+
+/* Đảm bảo wrapper căn giữa chính xác */
+.pdf-canvas-wrapper {
+  position: relative; /* Quan trọng để highlight canvas absolute đúng */
+}
