@@ -1565,3 +1565,48 @@ outline:2px solid #ff5f6d;
 cursor:pointer;
 
 }
+.highlight-palette{
+
+display:flex;
+
+gap:6px;
+
+align-items:center;
+
+margin:0 8px;
+
+}
+
+.color-btn{
+
+width:34px;
+
+height:34px;
+
+border:none;
+
+border-radius:8px;
+
+background:white;
+
+cursor:pointer;
+
+font-size:18px;
+
+transition:.2s;
+
+}
+
+.color-btn:hover{
+
+transform:scale(1.15);
+
+}
+
+.color-btn.active{
+
+outline:2px solid #667eea;
+
+box-shadow:0 0 8px rgba(102,126,234,.4);
+
+}
