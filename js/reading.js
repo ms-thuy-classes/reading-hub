@@ -766,7 +766,141 @@ function createHeading(q, index) {
 
   return `<div class="heading-match-list">${items}</div>`;
 }
+// ---------- FLASHCARDS ----------
+function renderFlashcards() {
+  const flashcards = state.article.flashcards;
+  
+  if (!flashcards || flashcards.length === 0) {
+    $('#flashcard-section').style.display = 'none';
+    return;
+  }
 
+  $('#flashcard-section').style.display = 'block';
+  state.flashcards = [...flashcards];
+  state.currentFcIndex = 0;
+
+  const grid = $('#flashcard-grid');
+  grid.innerHTML = state.flashcards.map((fc, i) => {
+    const posClass = getPosClass(fc.pos);
+    const posLabel = fc.pos || 'word';
+    
+    return `
+      <div class="flashcard-container" data-index="${i}" onclick="flipCard(this)">
+        <div class="flashcard">
+          <div class="flashcard-face flashcard-front">
+            <div class="flashcard-word">${escapeHtml(fc.word)}</div>
+            <span class="flashcard-pos ${posClass}">${posLabel}</span>
+            ${fc.ipa ? `<div class="flashcard-ipa">${escapeHtml(fc.ipa)}</div>` : ''}
+            <button class="flashcard-audio" onclick="event.stopPropagation(); speakWord('${fc.word.replace(/'/g, "\\'")}')" title="Phát âm">
+              🔊
+            </button>
+          </div>
+          <div class="flashcard-face flashcard-back">
+            <div class="flashcard-meaning">${escapeHtml(fc.meaning)}</div>
+            <div class="flashcard-hint">Click để lật lại</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  updateFcCounter();
+}
+
+function getPosClass(pos) {
+  if (!pos) return 'pos-default';
+  const p = pos.toLowerCase();
+  if (p.includes('noun')) return 'pos-noun';
+  if (p.includes('verb')) return 'pos-verb';
+  if (p.includes('adjective') || p === 'adj') return 'pos-adjective';
+  if (p.includes('adverb') || p === 'adv') return 'pos-adverb';
+  if (p.includes('preposition') || p === 'prep') return 'pos-preposition';
+  if (p.includes('conjunction') || p === 'conj') return 'pos-conjunction';
+  if (p.includes('pronoun') || p === 'pron') return 'pos-pronoun';
+  if (p.includes('phrase')) return 'pos-phrase';
+  return 'pos-default';
+}
+
+function flipCard(container) {
+  container.classList.toggle('flipped');
+}
+
+function updateFcCounter() {
+  const total = state.flashcards.length;
+  const current = state.currentFcIndex + 1;
+  $('#fc-counter').textContent = `${current} / ${total}`;
+}
+
+// Text-to-Speech
+function speakWord(word) {
+  if (!('speechSynthesis' in window)) {
+    showToast('Trình duyệt không hỗ trợ TTS', 'warning');
+    return;
+  }
+
+  // Cancel đang nói
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  // Tìm voice tiếng Anh
+  const voices = window.speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang.startsWith('en'));
+  if (enVoice) utterance.voice = enVoice;
+
+  utterance.onstart = () => {
+    const btn = event.target.closest('.flashcard-audio');
+    if (btn) btn.classList.add('speaking');
+  };
+
+  utterance.onend = () => {
+    document.querySelectorAll('.flashcard-audio.speaking').forEach(b => 
+      b.classList.remove('speaking')
+    );
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function speakAllWords() {
+  if (state.flashcards.length === 0) return;
+  
+  let index = 0;
+  function speakNext() {
+    if (index >= state.flashcards.length) return;
+    
+    const fc = state.flashcards[index];
+    const utterance = new SpeechSynthesisUtterance(fc.word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.85;
+    
+    const voices = window.speechSynthesis.getVoices();
+    const enVoice = voices.find(v => v.lang.startsWith('en'));
+    if (enVoice) utterance.voice = enVoice;
+    
+    utterance.onend = () => {
+      index++;
+      setTimeout(speakNext, 400); // Pause giữa các từ
+    };
+    
+    window.speechSynthesis.speak(utterance);
+  }
+  
+  speakNext();
+  showToast('Đang đọc tất cả từ vựng...', 'info');
+}
+
+function shuffleFlashcards() {
+  for (let i = state.flashcards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.flashcards[i], state.flashcards[j]] = [state.flashcards[j], state.flashcards[i]];
+  }
+  renderFlashcards();
+  showToast('Đã xáo trộn thẻ!', 'success');
+}
 // ---------- QUESTION INTERACTIONS ----------
 function initQuestionInteractions() {
   // MCQ
