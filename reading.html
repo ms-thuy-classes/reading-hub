@@ -29,11 +29,11 @@
       </div>
 
       <div class="header-actions">
-        <button class="btn-icon" id="btn-bookmark" aria-label="Bookmark" title="Bookmark">🔖</button>
+        <button class="btn-icon" id="btn-bookmark" aria-label="Bookmark" title="Bookmark"></button>
         <button class="btn-icon" id="btn-favorite" aria-label="Favorite" title="Favorite">🤍</button>
-        <button class="btn-icon" id="btn-share" aria-label="Share" title="Share">🔗</button>
+        <button class="btn-icon" id="btn-share" aria-label="Share" title="Share"></button>
         <button class="btn-icon" id="theme-toggle" aria-label="Toggle dark mode">
-          <span class="theme-icon-light">🌙</span>
+          <span class="theme-icon-light"></span>
           <span class="theme-icon-dark">☀️</span>
         </button>
       </div>
@@ -67,30 +67,60 @@
     </div>
   </div>
 
+  <!-- ========== FLASHCARD SECTION ========== -->
+  <section class="flashcard-section" id="flashcard-section" style="display:none;">
+    <div class="container">
+      <div class="flashcard-header">
+        <h2 class="flashcard-title">🎴 Vocabulary Flashcards</h2>
+        <div class="flashcard-controls">
+          <button class="btn btn-sm btn-ghost" id="fc-shuffle" title="Xáo trộn"> Shuffle</button>
+          <button class="btn btn-sm btn-ghost" id="fc-speak-all" title="Đọc tất cả">🔊 Speak All</button>
+        </div>
+      </div>
+
+      <div class="flashcard-single-wrapper">
+        <button class="fc-nav-btn fc-nav-prev" id="fc-prev" title="Thẻ trước">
+          <span>◀</span>
+        </button>
+
+        <div class="flashcard-single-container" id="flashcard-single-container">
+          <div class="flashcard-single" id="flashcard-single">
+            <!-- Front -->
+            <div class="fc-face fc-front">
+              <div class="fc-word" id="fc-word">Word</div>
+              <span class="fc-pos" id="fc-pos">noun</span>
+              <div class="fc-ipa" id="fc-ipa">/wɜːrd/</div>
+              <button class="fc-audio-btn" id="fc-audio-btn" title="Nghe phát âm">
+                🔊
+              </button>
+              <div class="fc-flip-hint">👆 Click để xem nghĩa</div>
+            </div>
+            <!-- Back -->
+            <div class="fc-face fc-back">
+              <div class="fc-meaning" id="fc-meaning">Nghĩa tiếng Việt</div>
+              <div class="fc-word-small" id="fc-word-small">word</div>
+              <div class="fc-flip-hint">👆 Click để lật lại</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="fc-nav-btn fc-nav-next" id="fc-next" title="Thẻ sau">
+          <span>▶</span>
+        </button>
+      </div>
+
+      <div class="flashcard-footer">
+        <span class="fc-counter" id="fc-counter">0 / 0</span>
+        <div class="fc-dots" id="fc-dots"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ========== MOBILE TABS ========== -->
   <div class="mobile-tabs" id="mobile-tabs">
     <button class="mobile-tab active" data-tab="pdf">📄 PDF</button>
     <button class="mobile-tab" data-tab="questions">❓ Questions</button>
   </div>
-  <!-- ========== FLASHCARD SECTION ========== -->
-<section class="flashcard-section" id="flashcard-section" style="display:none;">
-  <div class="container">
-    <div class="flashcard-header">
-      <h2 class="flashcard-title">🎴 Vocabulary Flashcards</h2>
-      <div class="flashcard-controls">
-        <button class="btn btn-sm btn-ghost" id="fc-prev" title="Thẻ trước">◀</button>
-        <span class="fc-counter" id="fc-counter">0 / 0</span>
-        <button class="btn btn-sm btn-ghost" id="fc-next" title="Thẻ sau">▶</button>
-        <button class="btn btn-sm btn-ghost" id="fc-shuffle" title="Xáo trộn">🔀</button>
-        <button class="btn btn-sm btn-ghost" id="fc-speak-all" title="Đọc tất cả">🔊</button>
-      </div>
-    </div>
-
-    <div class="flashcard-grid" id="flashcard-grid">
-      <!-- Flashcards sẽ được render bằng JS -->
-    </div>
-  </div>
-</section>
 
   <!-- ========== MAIN SPLIT ========== -->
   <main class="split-container" id="split-container">
@@ -119,7 +149,7 @@
 
         <div class="toolbar-divider"></div>
 
-        <button class="btn-icon" id="pdf-highlight-toggle" title="Highlight tool">🖍️</button>
+        <button class="btn-icon" id="pdf-highlight-toggle" title="Highlight tool">️</button>
         <button class="btn-icon" id="pdf-search-toggle" title="Search in PDF">🔍</button>
       </div>
 
@@ -156,7 +186,6 @@
       </div>
 
       <div class="questions-list" id="questions-list">
-        <!-- Skeleton -->
         <div class="skeleton-question"></div>
         <div class="skeleton-question"></div>
         <div class="skeleton-question"></div>
@@ -165,7 +194,6 @@
   </main>
 
   <!-- ========== MODALS ========== -->
-  <!-- Retry Confirm Modal -->
   <div class="modal-overlay" id="modal-retry" style="display:none;">
     <div class="modal glass" role="dialog" aria-modal="true" aria-labelledby="modal-retry-title">
       <h3 id="modal-retry-title">🔄 Làm lại bài?</h3>
@@ -177,7 +205,6 @@
     </div>
   </div>
 
-  <!-- Result Modal -->
   <div class="modal-overlay" id="modal-result" style="display:none;">
     <div class="modal glass modal-lg" role="dialog" aria-modal="true">
       <h3>🎉 Kết quả</h3>
