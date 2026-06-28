@@ -163,7 +163,8 @@ async function loadArticle() {
 
     // Render questions
     renderQuestions();
-
+// Render flashcards
+renderFlashcards();
     // Start timer
     startTimer();
 
