@@ -752,10 +752,10 @@ body.dark-mode .theme-icon-dark { display: inline; }
    ============================================ */
 
 .reading-page {
-  overflow: hidden;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 /* Reading Header */
@@ -897,7 +897,7 @@ body.dark-mode .theme-icon-dark { display: inline; }
 .split-container {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  min-height: 600px;
   position: relative;
 }
 
@@ -906,6 +906,7 @@ body.dark-mode .theme-icon-dark { display: inline; }
   flex-direction: column;
   overflow: hidden;
   min-width: 200px;
+  min-height: 500px;
 }
 
 .split-left {
@@ -1025,6 +1026,7 @@ body.dark-mode .theme-icon-dark { display: inline; }
   justify-content: center;
   padding: 20px;
   background: #e8e8e8;
+  min-height: 400px;
 }
 
 #pdf-canvas {
@@ -1076,6 +1078,8 @@ body.dark-mode .theme-icon-dark { display: inline; }
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 400px;
+  max-height: none;
 }
 
 /* Question Card */
@@ -1483,18 +1487,19 @@ body.dark-mode .theme-icon-dark { display: inline; }
 
   .split-resizer { display: none; }
 
-  .split-left, .split-right {
-    width: 100% !important;
-    flex: none !important;
-    display: none;
-  }
+ .split-left, .split-right {
+  width: 100% !important;
+  flex: none !important;
+  display: none;
+  min-height: 500px;
+}
 
-  .split-left.mobile-active,
-  .split-right.mobile-active {
-    display: flex;
-    flex: 1;
-  }
-
+.split-left.mobile-active,
+.split-right.mobile-active {
+  display: flex;
+  flex: 1;
+  min-height: 600px;
+}
   .pdf-toolbar {
     overflow-x: auto;
     flex-wrap: nowrap;
@@ -1983,4 +1988,78 @@ body.dark-mode .fc-back {
     height: 44px;
     font-size: 1.1rem;
   }
+}
+/* ============================================
+   CUSTOM SCROLLBAR FOR READING PAGE
+   ============================================ */
+
+/* Scrollbar cho questions list */
+.questions-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.questions-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.questions-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.questions-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5568d3, #653a92);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Scrollbar cho PDF wrapper */
+.pdf-canvas-wrapper::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.pdf-canvas-wrapper::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.pdf-canvas-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Dark mode scrollbar */
+body.dark-mode .questions-list::-webkit-scrollbar-track,
+body.dark-mode .pdf-canvas-wrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .questions-list::-webkit-scrollbar-thumb,
+body.dark-mode .pdf-canvas-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #5568d3, #653a92);
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scoreboard sticky khi cuộn */
+.scoreboard {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+/* Reading header sticky */
+.reading-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
