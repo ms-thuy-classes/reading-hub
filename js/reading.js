@@ -24,6 +24,7 @@ const state = {
   },
   flashcards: [],
   currentFcIndex: 0,
+  fcFlipped: false,
   history: []
 };
 
@@ -53,7 +54,7 @@ async function init() {
   initKeyboard();
 
   await loadArticle();
-   // Load TTS voices
+ // Preload TTS voices
 if ('speechSynthesis' in window) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => {
@@ -775,10 +776,13 @@ function createHeading(q, index) {
 
   return `<div class="heading-match-list">${items}</div>`;
 }
-// ---------- FLASHCARDS ----------
+// ============================================
+// FLASHCARD SYSTEM - SINGLE CARD
+// ============================================
+
 function renderFlashcards() {
   const flashcards = state.article.flashcards;
-  
+
   if (!flashcards || flashcards.length === 0) {
     $('#flashcard-section').style.display = 'none';
     return;
@@ -787,34 +791,219 @@ function renderFlashcards() {
   $('#flashcard-section').style.display = 'block';
   state.flashcards = [...flashcards];
   state.currentFcIndex = 0;
+  state.fcFlipped = false;
 
-  const grid = $('#flashcard-grid');
-  grid.innerHTML = state.flashcards.map((fc, i) => {
-    const posClass = getPosClass(fc.pos);
-    const posLabel = fc.pos || 'word';
-    
-    return `
-      <div class="flashcard-container" data-index="${i}" onclick="flipCard(this)">
-        <div class="flashcard">
-          <div class="flashcard-face flashcard-front">
-            <div class="flashcard-word">${escapeHtml(fc.word)}</div>
-            <span class="flashcard-pos ${posClass}">${posLabel}</span>
-            ${fc.ipa ? `<div class="flashcard-ipa">${escapeHtml(fc.ipa)}</div>` : ''}
-            <button class="flashcard-audio" onclick="event.stopPropagation(); speakWord('${fc.word.replace(/'/g, "\\'")}')" title="Phát âm">
-              🔊
-            </button>
-          </div>
-          <div class="flashcard-face flashcard-back">
-            <div class="flashcard-meaning">${escapeHtml(fc.meaning)}</div>
-            <div class="flashcard-hint">Click để lật lại</div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  updateFcCounter();
+  renderCurrentFlashcard();
+  renderDots();
 }
+
+function renderCurrentFlashcard() {
+  const fc = state.flashcards[state.currentFcIndex];
+  if (!fc) return;
+
+  // Reset flip
+  state.fcFlipped = false;
+  $('#flashcard-single').classList.remove('flipped');
+
+  // Update content
+  $('#fc-word').textContent = fc.word;
+  $('#fc-word-small').textContent = fc.word;
+  $('#fc-pos').textContent = fc.pos || 'word';
+  $('#fc-pos').className = 'fc-pos ' + getPosClass(fc.pos);
+  $('#fc-ipa').textContent = fc.ipa || '';
+  $('#fc-meaning').textContent = fc.meaning || '';
+
+  // Update counter
+  $('#fc-counter').textContent = `${state.currentFcIndex + 1} / ${state.flashcards.length}`;
+
+  // Update dots
+  updateDots();
+
+  // Update nav buttons state
+  $('#fc-prev').style.opacity = state.currentFcIndex === 0 ? '0.4' : '1';
+  $('#fc-next').style.opacity = state.currentFcIndex === state.flashcards.length - 1 ? '0.4' : '1';
+}
+
+function renderDots() {
+  const dotsContainer = $('#fc-dots');
+  dotsContainer.innerHTML = state.flashcards.map((_, i) =>
+    `<span class="fc-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`
+  ).join('');
+
+  // Click dot to navigate
+  dotsContainer.querySelectorAll('.fc-dot').forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(dot.dataset.index);
+      state.currentFcIndex = idx;
+      renderCurrentFlashcard();
+    });
+  });
+}
+
+function updateDots() {
+  document.querySelectorAll('.fc-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === state.currentFcIndex);
+  });
+}
+
+function navigateFlashcard(direction) {
+  const newIndex = state.currentFcIndex + direction;
+  if (newIndex < 0 || newIndex >= state.flashcards.length) return;
+
+  state.currentFcIndex = newIndex;
+  renderCurrentFlashcard();
+}
+
+function toggleFcFlip() {
+  state.fcFlipped = !state.fcFlipped;
+  $('#flashcard-single').classList.toggle('flipped', state.fcFlipped);
+}
+
+function getPosClass(pos) {
+  if (!pos) return 'pos-default';
+  const p = pos.toLowerCase();
+  if (p.includes('noun')) return 'pos-noun';
+  if (p.includes('verb')) return 'pos-verb';
+  if (p.includes('adjective') || p === 'adj') return 'pos-adjective';
+  if (p.includes('adverb') || p === 'adv') return 'pos-adverb';
+  if (p.includes('preposition') || p === 'prep') return 'pos-preposition';
+  if (p.includes('conjunction') || p === 'conj') return 'pos-conjunction';
+  if (p.includes('pronoun') || p === 'pron') return 'pos-pronoun';
+  if (p.includes('phrase')) return 'pos-phrase';
+  return 'pos-default';
+}
+
+// ---------- TEXT-TO-SPEECH ----------
+function getEnglishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  // Ưu tiên voice Google US English, Microsoft, hoặc bất kỳ voice en-US nào
+  const priority = [
+    v => v.name.includes('Google') && v.lang.startsWith('en'),
+    v => v.name.includes('Microsoft') && v.lang.startsWith('en'),
+    v => v.lang === 'en-US',
+    v => v.lang.startsWith('en')
+  ];
+
+  for (const check of priority) {
+    const found = voices.find(check);
+    if (found) return found;
+  }
+  return null;
+}
+
+function speakWord(word) {
+  if (!('speechSynthesis' in window)) {
+    showToast('Trình duyệt không hỗ trợ phát âm', 'warning');
+    return;
+  }
+
+  // Cancel mọi phát âm đang chạy
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  const voice = getEnglishVoice();
+  if (voice) utterance.voice = voice;
+
+  const btn = $('#fc-audio-btn');
+  utterance.onstart = () => {
+    if (btn) btn.classList.add('speaking');
+  };
+  utterance.onend = () => {
+    if (btn) btn.classList.remove('speaking');
+  };
+  utterance.onerror = (e) => {
+    console.error('TTS Error:', e);
+    if (btn) btn.classList.remove('speaking');
+  };
+
+  // Delay nhỏ để browser kịp cancel utterance trước
+  setTimeout(() => {
+    window.speechSynthesis.speak(utterance);
+  }, 50);
+}
+
+function speakCurrentWord() {
+  const fc = state.flashcards[state.currentFcIndex];
+  if (!fc) return;
+  speakWord(fc.word);
+}
+
+function speakAllWords() {
+  if (state.flashcards.length === 0) return;
+
+  window.speechSynthesis.cancel();
+
+  let index = 0;
+  function speakNext() {
+    if (index >= state.flashcards.length) {
+      showToast('Đã đọc xong tất cả từ!', 'success');
+      return;
+    }
+
+    const fc = state.flashcards[index];
+    const utterance = new SpeechSynthesisUtterance(fc.word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.85;
+    utterance.volume = 1;
+
+    const voice = getEnglishVoice();
+    if (voice) utterance.voice = voice;
+
+    utterance.onend = () => {
+      index++;
+      setTimeout(speakNext, 500);
+    };
+
+    utterance.onerror = () => {
+      index++;
+      setTimeout(speakNext, 100);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  speakNext();
+  showToast('Đang đọc tất cả từ vựng...', 'info');
+}
+
+function shuffleFlashcards() {
+  if (state.flashcards.length <= 1) return;
+
+  for (let i = state.flashcards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.flashcards[i], state.flashcards[j]] = [state.flashcards[j], state.flashcards[i]];
+  }
+  state.currentFcIndex = 0;
+  renderCurrentFlashcard();
+  renderDots();
+  showToast('Đã xáo trộn thẻ!', 'success');
+}
+
+// Keyboard navigation cho flashcard
+document.addEventListener('keydown', (e) => {
+  // Chỉ active khi flashcard section đang hiển thị
+  if ($('#flashcard-section').style.display === 'none') return;
+
+  // Không trigger khi đang focus input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  if (e.key === 'ArrowLeft') {
+    navigateFlashcard(-1);
+  } else if (e.key === 'ArrowRight') {
+    navigateFlashcard(1);
+  } else if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    toggleFcFlip();
+  } else if (e.key.toLowerCase() === 's') {
+    speakCurrentWord();
+  }
+});
 
 function getPosClass(pos) {
   if (!pos) return 'pos-default';
@@ -1197,27 +1386,19 @@ function initButtons() {
   $('#btn-back').addEventListener('click', () => {
     window.location.href = 'index.html';
   });
-   // Flashcard controls
-$('#fc-prev').addEventListener('click', () => {
-  if (state.currentFcIndex > 0) {
-    state.currentFcIndex--;
-    const card = document.querySelector(`.flashcard-container[data-index="${state.currentFcIndex}"]`);
-    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    updateFcCounter();
-  }
-});
-
-$('#fc-next').addEventListener('click', () => {
-  if (state.currentFcIndex < state.flashcards.length - 1) {
-    state.currentFcIndex++;
-    const card = document.querySelector(`.flashcard-container[data-index="${state.currentFcIndex}"]`);
-    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    updateFcCounter();
-  }
-});
-
+// Flashcard controls
+$('#fc-prev').addEventListener('click', () => navigateFlashcard(-1));
+$('#fc-next').addEventListener('click', () => navigateFlashcard(1));
 $('#fc-shuffle').addEventListener('click', shuffleFlashcards);
 $('#fc-speak-all').addEventListener('click', speakAllWords);
+$('#fc-audio-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  speakCurrentWord();
+});
+$('#flashcard-single-container').addEventListener('click', () => {
+  toggleFcFlip();
+});
+
 
   $('#btn-check').addEventListener('click', checkAnswers);
   $('#btn-retry').addEventListener('click', () => showModal('modal-retry'));
