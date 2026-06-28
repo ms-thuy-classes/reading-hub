@@ -72,6 +72,25 @@
     <button class="mobile-tab active" data-tab="pdf">📄 PDF</button>
     <button class="mobile-tab" data-tab="questions">❓ Questions</button>
   </div>
+  <!-- ========== FLASHCARD SECTION ========== -->
+<section class="flashcard-section" id="flashcard-section" style="display:none;">
+  <div class="container">
+    <div class="flashcard-header">
+      <h2 class="flashcard-title">🎴 Vocabulary Flashcards</h2>
+      <div class="flashcard-controls">
+        <button class="btn btn-sm btn-ghost" id="fc-prev" title="Thẻ trước">◀</button>
+        <span class="fc-counter" id="fc-counter">0 / 0</span>
+        <button class="btn btn-sm btn-ghost" id="fc-next" title="Thẻ sau">▶</button>
+        <button class="btn btn-sm btn-ghost" id="fc-shuffle" title="Xáo trộn">🔀</button>
+        <button class="btn btn-sm btn-ghost" id="fc-speak-all" title="Đọc tất cả">🔊</button>
+      </div>
+    </div>
+
+    <div class="flashcard-grid" id="flashcard-grid">
+      <!-- Flashcards sẽ được render bằng JS -->
+    </div>
+  </div>
+</section>
 
   <!-- ========== MAIN SPLIT ========== -->
   <main class="split-container" id="split-container">
