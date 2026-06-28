@@ -3,6 +3,26 @@
   "title": "The Amazing World of Bees",
   "level": "A2",
   "pdf": "pdf/article-001.pdf",
+   "flashcards": [
+    {
+      "word": "fascinating",
+      "pos": "adjective",
+      "ipa": "/ˈfæs.ɪ.neɪ.tɪ/",
+      "meaning": "hấp dẫn, thú vị"
+    },
+    {
+      "word": "colony",
+      "pos": "noun",
+      "ipa": "/ˈkɒl.ə.ni/",
+      "meaning": "bầy, đàn (ong)"
+    },
+    {
+      "word": "pollinate",
+      "pos": "verb",
+      "ipa": "/ˈpɒl.ɪ.neɪt/",
+      "meaning": "thụ phấn"
+    }
+   ],
   "questions": [
     {
       "type": "mcq",
