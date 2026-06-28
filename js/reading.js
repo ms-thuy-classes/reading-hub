@@ -22,6 +22,8 @@ const state = {
     highlightMode: false,
     highlights: []
   },
+  flashcards: [],
+  currentFcIndex: 0,
   history: []
 };
 
