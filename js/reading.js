@@ -61,6 +61,26 @@ if ('speechSynthesis' in window) {
     window.speechSynthesis.getVoices();
   };
 }
+   // Thêm nút scroll to questions
+setTimeout(() => {
+  const scoreboard = $('#scoreboard');
+  if (scoreboard) {
+    const scrollBtn = document.createElement('button');
+    scrollBtn.className = 'btn btn-sm btn-ghost';
+    scrollBtn.textContent = '⬇️ Questions';
+    scrollBtn.title = 'Cuộn xuống phần câu hỏi';
+    scrollBtn.style.marginLeft = 'auto';
+    
+    scrollBtn.addEventListener('click', () => {
+      const questionsSection = $('#split-right');
+      if (questionsSection) {
+        questionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    scoreboard.appendChild(scrollBtn);
+  }
+}, 1000);
 }
 
 
@@ -2012,3 +2032,32 @@ function hexToRgba(hex, alpha) {
   const b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
+// ============================================
+// SCROLL TO QUESTION HELPER
+// ============================================
+
+// Thêm nút "Jump to question" trong scoreboard
+function addScrollToQuestionFeature() {
+  const scoreboard = $('#scoreboard');
+  if (!scoreboard) return;
+
+  // Tạo nút scroll down
+  const scrollBtn = document.createElement('button');
+  scrollBtn.className = 'btn btn-sm btn-ghost';
+  scrollBtn.textContent = '⬇️ Questions';
+  scrollBtn.title = 'Cuộn xuống phần câu hỏi';
+  scrollBtn.style.marginLeft = 'auto';
+  
+  scrollBtn.addEventListener('click', () => {
+    const questionsList = $('#questions-list');
+    if (questionsList) {
+      questionsList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  scoreboard.appendChild(scrollBtn);
+}
+
+// Gọi hàm này trong init()
+// Thêm dòng này vào cuối hàm init():
+// addScrollToQuestionFeature();
