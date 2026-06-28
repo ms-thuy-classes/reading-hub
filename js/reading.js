@@ -53,7 +53,15 @@ async function init() {
   initKeyboard();
 
   await loadArticle();
+   // Load TTS voices
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
 }
+}
+
 
 // ---------- THEME ----------
 function initTheme() {
@@ -1189,6 +1197,27 @@ function initButtons() {
   $('#btn-back').addEventListener('click', () => {
     window.location.href = 'index.html';
   });
+   // Flashcard controls
+$('#fc-prev').addEventListener('click', () => {
+  if (state.currentFcIndex > 0) {
+    state.currentFcIndex--;
+    const card = document.querySelector(`.flashcard-container[data-index="${state.currentFcIndex}"]`);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    updateFcCounter();
+  }
+});
+
+$('#fc-next').addEventListener('click', () => {
+  if (state.currentFcIndex < state.flashcards.length - 1) {
+    state.currentFcIndex++;
+    const card = document.querySelector(`.flashcard-container[data-index="${state.currentFcIndex}"]`);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    updateFcCounter();
+  }
+});
+
+$('#fc-shuffle').addEventListener('click', shuffleFlashcards);
+$('#fc-speak-all').addEventListener('click', speakAllWords);
 
   $('#btn-check').addEventListener('click', checkAnswers);
   $('#btn-retry').addEventListener('click', () => showModal('modal-retry'));
